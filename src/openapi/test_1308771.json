@@ -1,0 +1,5198 @@
+{
+  "openapi": "3.0.1",
+  "info": {
+    "title": "Plantera API",
+    "description": "",
+    "version": "1.0.0"
+  },
+  "tags": [
+    {
+      "name": "Auth"
+    },
+    {
+      "name": "Plant"
+    },
+    {
+      "name": "Smart Diagnostics"
+    },
+    {
+      "name": "My Plants"
+    },
+    {
+      "name": "Profile"
+    }
+  ],
+  "paths": {
+    "/api/v1/auth/register": {
+      "post": {
+        "summary": "Register",
+        "deprecated": false,
+        "description": "",
+        "tags": ["Auth"],
+        "parameters": [],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "firstName": {
+                    "type": "string",
+                    "description": "User's first name",
+                    "x-apidog-mock": "{{$person.firstName}}"
+                  },
+                  "lastName": {
+                    "type": "string",
+                    "description": "User's last name",
+                    "x-apidog-mock": "{{$person.lastName}}"
+                  },
+                  "userName": {
+                    "type": "string",
+                    "description": "Unique username chosen by the user",
+                    "x-apidog-mock": "{{$internet.userName}}"
+                  },
+                  "email": {
+                    "type": "string",
+                    "format": "email",
+                    "description": "Valid email address for registration",
+                    "x-apidog-mock": "{{$internet.email}}"
+                  },
+                  "password": {
+                    "type": "string",
+                    "description": "Password string (minimum 8 characters)",
+                    "minLength": 8,
+                    "x-apidog-mock": "{{$internet.password}}"
+                  }
+                },
+                "x-apidog-orders": ["01KVNJWAFXNWBT2JCJR2FB3JSK"],
+                "required": [
+                  "firstName",
+                  "lastName",
+                  "userName",
+                  "email",
+                  "password"
+                ],
+                "x-apidog-refs": {
+                  "01KVNJWAFXNWBT2JCJR2FB3JSK": {
+                    "$ref": "#/components/schemas/RegisterRequest"
+                  }
+                },
+                "x-apidog-ignore-properties": [
+                  "firstName",
+                  "lastName",
+                  "userName",
+                  "email",
+                  "password"
+                ]
+              },
+              "example": {
+                "firstName": "Wyman",
+                "lastName": "Greenfelder",
+                "userName": "Era20",
+                "email": "Edythe10@yahoo.com",
+                "password": "leSYxEOgiI7Zqcw"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "accessToken": {
+                      "type": "object",
+                      "description": "JWT authentication token details",
+                      "properties": {
+                        "token": {
+                          "type": "string",
+                          "description": "Base64 encoded JWT access token",
+                          "minLength": 100,
+                          "maxLength": 120,
+                          "x-apidog-mock": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwiZW1haWwiOiJlc3NhQHBsYW50ZXJhLmNvbSJ9.abc123xyz456_exampletoken"
+                        },
+                        "type": {
+                          "type": "string",
+                          "default": "Bearer",
+                          "description": "The token type (always Bearer)",
+                          "x-apidog-mock": "Bearer"
+                        },
+                        "expiresIn": {
+                          "type": "integer",
+                          "default": 3600,
+                          "description": "Token expiration lifetime in seconds",
+                          "x-apidog-mock": "{{$number.int(min=3600, max=3600)}}"
+                        }
+                      },
+                      "required": ["token", "type", "expiresIn"],
+                      "x-apidog-orders": ["token", "type", "expiresIn"],
+                      "x-apidog-ignore-properties": []
+                    },
+                    "refreshToken": {
+                      "type": "string",
+                      "description": "Long-lived refresh token string used to request new access tokens",
+                      "minLength": 100,
+                      "maxLength": 120,
+                      "x-apidog-mock": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwiZW1haWwiOiJlc3NhQHBsYW50ZXJhLmNvbSJ9.refresh_token_string_example"
+                    }
+                  },
+                  "additionalProperties": false,
+                  "x-apidog-orders": ["01KVNJYADEJ43SC9HEW3YRVD5S"],
+                  "x-apidog-refs": {
+                    "01KVNJYADEJ43SC9HEW3YRVD5S": {
+                      "$ref": "#/components/schemas/RegisterResponse"
+                    }
+                  },
+                  "required": ["accessToken", "refreshToken"],
+                  "x-apidog-ignore-properties": ["accessToken", "refreshToken"]
+                }
+              }
+            },
+            "headers": {},
+            "x-apidog-name": "Success",
+            "x-apidog-ordering": 0
+          },
+          "400": {
+            "$ref": "#/components/responses/BadRequest",
+            "description": "",
+            "x-apidog-ordering": 3
+          },
+          "405": {
+            "$ref": "#/components/responses/MethodNotAllowed",
+            "description": "",
+            "x-apidog-ordering": 4
+          },
+          "409": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "title": "",
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean",
+                      "const": false,
+                      "description": "Always false for error responses",
+                      "example": false
+                    },
+                    "errorCode": {
+                      "oneOf": [
+                        {
+                          "description": "One of the standard global error codes.",
+                          "$ref": "#/components/schemas/GlobalErrorCode"
+                        }
+                      ]
+                    },
+                    "message": {
+                      "type": "string",
+                      "description": "Default human-readable error description.",
+                      "x-apidog-mock": "An error occurred while processing the request."
+                    },
+                    "error": {
+                      "type": "string",
+                      "description": "HTTP standard status error phrase.",
+                      "x-apidog-mock": "Bad Request"
+                    },
+                    "details": {
+                      "type": "object",
+                      "description": "Structured field-specific error details mapped by field name, optimized for localization.",
+                      "additionalProperties": {
+                        "type": "object",
+                        "required": ["code", "message"],
+                        "properties": {
+                          "code": {
+                            "type": "string",
+                            "description": "Machine-readable localization key (e.g., REQUIRED, TOO_SHORT, INVALID_FORMAT).",
+                            "x-apidog-mock": "TOO_SHORT"
+                          },
+                          "message": {
+                            "type": "string",
+                            "description": "Default human-readable fallback message.",
+                            "x-apidog-mock": "Must be at least 8 characters."
+                          },
+                          "params": {
+                            "type": "object",
+                            "description": "Optional interpolation parameters for localization strings.",
+                            "properties": {
+                              "min": {
+                                "type": "number",
+                                "description": "Minimum value or length constraint."
+                              },
+                              "max": {
+                                "type": "number",
+                                "description": "Maximum value or length constraint."
+                              },
+                              "length": {
+                                "type": "integer",
+                                "description": "Exact length constraint."
+                              },
+                              "allowedValues": {
+                                "type": "array",
+                                "description": "List of allowed values for enum validation.",
+                                "items": {
+                                  "type": "string"
+                                }
+                              }
+                            },
+                            "additionalProperties": true,
+                            "x-apidog-mock": {
+                              "min": 8
+                            },
+                            "x-apidog-orders": [
+                              "min",
+                              "max",
+                              "length",
+                              "allowedValues"
+                            ]
+                          }
+                        },
+                        "additionalProperties": false,
+                        "x-apidog-orders": ["code", "message", "params"]
+                      },
+                      "x-apidog-orders": [],
+                      "properties": {},
+                      "x-apidog-ignore-properties": []
+                    }
+                  },
+                  "x-apidog-orders": ["01KVTKQJHVGJX5C4P7TP35MH94"],
+                  "required": ["success", "errorCode", "message", "error"],
+                  "x-apidog-refs": {
+                    "01KVTKQJHVGJX5C4P7TP35MH94": {
+                      "$ref": "#/components/schemas/ErrorResponse"
+                    }
+                  },
+                  "x-apidog-ignore-properties": [
+                    "success",
+                    "errorCode",
+                    "message",
+                    "error",
+                    "details"
+                  ]
+                }
+              }
+            },
+            "headers": {},
+            "x-apidog-name": "Conflict",
+            "x-apidog-ordering": 6
+          },
+          "415": {
+            "$ref": "#/components/responses/UnsupportedMediaType",
+            "description": "",
+            "x-apidog-ordering": 5
+          },
+          "422": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "title": "",
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean",
+                      "const": false,
+                      "description": "Always false for error responses",
+                      "example": false
+                    },
+                    "errorCode": {
+                      "oneOf": [
+                        {
+                          "description": "One of the standard global error codes.",
+                          "$ref": "#/components/schemas/GlobalErrorCode"
+                        }
+                      ]
+                    },
+                    "message": {
+                      "type": "string",
+                      "description": "Default human-readable error description.",
+                      "x-apidog-mock": "An error occurred while processing the request."
+                    },
+                    "error": {
+                      "type": "string",
+                      "description": "HTTP standard status error phrase.",
+                      "x-apidog-mock": "Bad Request"
+                    },
+                    "details": {
+                      "type": "object",
+                      "description": "Structured field-specific error details mapped by field name, optimized for localization.",
+                      "additionalProperties": {
+                        "type": "object",
+                        "required": ["code", "message"],
+                        "properties": {
+                          "code": {
+                            "type": "string",
+                            "description": "Machine-readable localization key (e.g., REQUIRED, TOO_SHORT, INVALID_FORMAT).",
+                            "x-apidog-mock": "TOO_SHORT"
+                          },
+                          "message": {
+                            "type": "string",
+                            "description": "Default human-readable fallback message.",
+                            "x-apidog-mock": "Must be at least 8 characters."
+                          },
+                          "params": {
+                            "type": "object",
+                            "description": "Optional interpolation parameters for localization strings.",
+                            "properties": {
+                              "min": {
+                                "type": "number",
+                                "description": "Minimum value or length constraint."
+                              },
+                              "max": {
+                                "type": "number",
+                                "description": "Maximum value or length constraint."
+                              },
+                              "length": {
+                                "type": "integer",
+                                "description": "Exact length constraint."
+                              },
+                              "allowedValues": {
+                                "type": "array",
+                                "description": "List of allowed values for enum validation.",
+                                "items": {
+                                  "type": "string"
+                                }
+                              }
+                            },
+                            "additionalProperties": true,
+                            "x-apidog-mock": {
+                              "min": 8
+                            },
+                            "x-apidog-orders": [
+                              "min",
+                              "max",
+                              "length",
+                              "allowedValues"
+                            ]
+                          }
+                        },
+                        "additionalProperties": false,
+                        "x-apidog-orders": ["code", "message", "params"]
+                      },
+                      "x-apidog-orders": [],
+                      "properties": {},
+                      "x-apidog-ignore-properties": []
+                    }
+                  },
+                  "x-apidog-orders": ["01KVTRQQ6QEA1HKM78XF72P8NW"],
+                  "required": ["success", "errorCode", "message", "error"],
+                  "x-apidog-refs": {
+                    "01KVTRQQ6QEA1HKM78XF72P8NW": {
+                      "$ref": "#/components/schemas/ErrorResponse"
+                    }
+                  },
+                  "x-apidog-ignore-properties": [
+                    "success",
+                    "errorCode",
+                    "message",
+                    "error",
+                    "details"
+                  ]
+                }
+              }
+            },
+            "headers": {},
+            "x-apidog-name": "UnprocessableContent",
+            "x-apidog-ordering": 7
+          },
+          "429": {
+            "$ref": "#/components/responses/TooManyRequests",
+            "description": "",
+            "x-apidog-ordering": 2
+          },
+          "500": {
+            "$ref": "#/components/responses/InternalServerError",
+            "description": "",
+            "x-apidog-ordering": 1
+          }
+        },
+        "security": [],
+        "x-apidog-folder": "Auth",
+        "x-apidog-status": "developing",
+        "x-apidog-maintainer": "Mohammad Ashraf",
+        "x-run-in-apidog": "https://app.apidog.com/web/project/1308771/apis/api-38275558-run"
+      }
+    },
+    "/api/v1/auth/login": {
+      "post": {
+        "summary": "Login",
+        "deprecated": false,
+        "description": "",
+        "tags": ["Auth"],
+        "parameters": [],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "email": {
+                    "type": "string",
+                    "format": "email",
+                    "description": "User's email address",
+                    "x-apidog-mock": "{{$internet.email}}"
+                  },
+                  "password": {
+                    "type": "string",
+                    "writeOnly": true,
+                    "minLength": 8,
+                    "format": "password",
+                    "description": "User's password",
+                    "x-apidog-mock": "{{$internet.password}}"
+                  }
+                },
+                "x-apidog-orders": ["01KVNKNAS7G02QCCSEXJTR0D8V"],
+                "required": ["email"],
+                "x-apidog-refs": {
+                  "01KVNKNAS7G02QCCSEXJTR0D8V": {
+                    "$ref": "#/components/schemas/LoginRequest"
+                  }
+                },
+                "x-apidog-ignore-properties": ["email", "password"]
+              },
+              "example": {
+                "email": "Laury31@yahoo.com",
+                "password": "cXzleBrbqlyWh7w"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean",
+                      "default": true,
+                      "description": "Indicates if the request was successful"
+                    },
+                    "message": {
+                      "type": "string",
+                      "description": "Human-readable status or success message",
+                      "x-apidog-mock": "User logged in successfully."
+                    },
+                    "timestamp": {
+                      "type": "string",
+                      "format": "date-time",
+                      "description": "ISO 8601 timestamp of the response",
+                      "x-apidog-mock": "{{$date.anytime}}"
+                    },
+                    "data": {
+                      "description": "Payload containing the generated session access and refresh tokens",
+                      "type": "object",
+                      "x-apidog-refs": {
+                        "01KVTM28VRDQFYNP7FVZJK3N7X": {
+                          "$ref": "#/components/schemas/RegisterResponse",
+                          "x-apidog-overrides": {}
+                        }
+                      },
+                      "properties": {
+                        "accessToken": {
+                          "type": "object",
+                          "description": "JWT authentication token details",
+                          "properties": {
+                            "token": {
+                              "type": "string",
+                              "description": "Base64 encoded JWT access token",
+                              "minLength": 100,
+                              "maxLength": 120,
+                              "x-apidog-mock": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwiZW1haWwiOiJlc3NhQHBsYW50ZXJhLmNvbSJ9.abc123xyz456_exampletoken"
+                            },
+                            "type": {
+                              "type": "string",
+                              "default": "Bearer",
+                              "description": "The token type (always Bearer)",
+                              "x-apidog-mock": "Bearer"
+                            },
+                            "expiresIn": {
+                              "type": "integer",
+                              "default": 3600,
+                              "description": "Token expiration lifetime in seconds",
+                              "x-apidog-mock": "{{$number.int(min=3600, max=3600)}}"
+                            }
+                          },
+                          "required": ["token", "type", "expiresIn"],
+                          "x-apidog-orders": ["token", "type", "expiresIn"],
+                          "x-apidog-ignore-properties": []
+                        },
+                        "refreshToken": {
+                          "type": "string",
+                          "description": "Long-lived refresh token string used to request new access tokens",
+                          "minLength": 100,
+                          "maxLength": 120,
+                          "x-apidog-mock": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwiZW1haWwiOiJlc3NhQHBsYW50ZXJhLmNvbSJ9.refresh_token_string_example"
+                        },
+                        "user": {
+                          "type": "object",
+                          "properties": {
+                            "id": {
+                              "type": "integer",
+                              "description": "Unique identifier of the user",
+                              "x-apidog-mock": "{{$number.int(min=1, max=1000)}}"
+                            },
+                            "firstName": {
+                              "type": "string",
+                              "description": "User's first name",
+                              "x-apidog-mock": "{{$person.firstName}}"
+                            },
+                            "lastName": {
+                              "type": "string",
+                              "description": "User's last name",
+                              "x-apidog-mock": "{{$person.lastName}}"
+                            },
+                            "userName": {
+                              "type": "string",
+                              "description": "Unique username used for identification",
+                              "x-apidog-mock": "{{$internet.userName}}"
+                            },
+                            "email": {
+                              "type": "string",
+                              "format": "email",
+                              "description": "User's email address",
+                              "x-apidog-mock": "{{$internet.email}}"
+                            },
+                            "password": {
+                              "type": "string",
+                              "writeOnly": true,
+                              "minLength": 8,
+                              "format": "password",
+                              "description": "User's password",
+                              "x-apidog-mock": "{{$internet.password}}"
+                            },
+                            "avatarUrl": {
+                              "type": "string",
+                              "format": "uri",
+                              "description": "URL to the user's profile avatar",
+                              "x-apidog-mock": "{{$image.avatar}}"
+                            }
+                          },
+                          "x-apidog-orders": ["01KVTWK2KBKCTQYVBJMJT0H0M8"],
+                          "required": [
+                            "id",
+                            "firstName",
+                            "lastName",
+                            "userName",
+                            "email",
+                            "avatarUrl"
+                          ],
+                          "x-apidog-refs": {
+                            "01KVTWK2KBKCTQYVBJMJT0H0M8": {
+                              "$ref": "#/components/schemas/User"
+                            }
+                          },
+                          "x-apidog-ignore-properties": [
+                            "id",
+                            "firstName",
+                            "lastName",
+                            "userName",
+                            "email",
+                            "password",
+                            "avatarUrl"
+                          ]
+                        }
+                      },
+                      "x-apidog-orders": ["01KVTM28VRDQFYNP7FVZJK3N7X", "user"],
+                      "required": ["user", "accessToken", "refreshToken"],
+                      "x-apidog-ignore-properties": [
+                        "accessToken",
+                        "refreshToken"
+                      ]
+                    }
+                  },
+                  "x-apidog-orders": ["01KVNKNYX26AWH9GXVERE0D270"],
+                  "required": ["success", "data"],
+                  "x-apidog-refs": {
+                    "01KVNKNYX26AWH9GXVERE0D270": {
+                      "$ref": "#/components/schemas/LoginResponse"
+                    }
+                  },
+                  "x-apidog-ignore-properties": [
+                    "success",
+                    "message",
+                    "timestamp",
+                    "data"
+                  ]
+                }
+              }
+            },
+            "headers": {},
+            "x-apidog-name": "Success",
+            "x-apidog-ordering": 0
+          },
+          "400": {
+            "$ref": "#/components/responses/BadRequest",
+            "description": "",
+            "x-apidog-ordering": 3
+          },
+          "405": {
+            "$ref": "#/components/responses/MethodNotAllowed",
+            "description": "",
+            "x-apidog-ordering": 4
+          },
+          "415": {
+            "$ref": "#/components/responses/UnsupportedMediaType",
+            "description": "",
+            "x-apidog-ordering": 5
+          },
+          "422": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "title": "",
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean",
+                      "const": false,
+                      "description": "Always false for error responses",
+                      "example": false
+                    },
+                    "errorCode": {
+                      "oneOf": [
+                        {
+                          "description": "One of the standard global error codes.",
+                          "$ref": "#/components/schemas/GlobalErrorCode"
+                        }
+                      ]
+                    },
+                    "message": {
+                      "type": "string",
+                      "description": "Default human-readable error description.",
+                      "x-apidog-mock": "An error occurred while processing the request."
+                    },
+                    "error": {
+                      "type": "string",
+                      "description": "HTTP standard status error phrase.",
+                      "x-apidog-mock": "Bad Request"
+                    },
+                    "details": {
+                      "type": "object",
+                      "description": "Structured field-specific error details mapped by field name, optimized for localization.",
+                      "additionalProperties": {
+                        "type": "object",
+                        "required": ["code", "message"],
+                        "properties": {
+                          "code": {
+                            "type": "string",
+                            "description": "Machine-readable localization key (e.g., REQUIRED, TOO_SHORT, INVALID_FORMAT).",
+                            "x-apidog-mock": "TOO_SHORT"
+                          },
+                          "message": {
+                            "type": "string",
+                            "description": "Default human-readable fallback message.",
+                            "x-apidog-mock": "Must be at least 8 characters."
+                          },
+                          "params": {
+                            "type": "object",
+                            "description": "Optional interpolation parameters for localization strings.",
+                            "properties": {
+                              "min": {
+                                "type": "number",
+                                "description": "Minimum value or length constraint."
+                              },
+                              "max": {
+                                "type": "number",
+                                "description": "Maximum value or length constraint."
+                              },
+                              "length": {
+                                "type": "integer",
+                                "description": "Exact length constraint."
+                              },
+                              "allowedValues": {
+                                "type": "array",
+                                "description": "List of allowed values for enum validation.",
+                                "items": {
+                                  "type": "string"
+                                }
+                              }
+                            },
+                            "additionalProperties": true,
+                            "x-apidog-mock": {
+                              "min": 8
+                            },
+                            "x-apidog-orders": [
+                              "min",
+                              "max",
+                              "length",
+                              "allowedValues"
+                            ]
+                          }
+                        },
+                        "additionalProperties": false,
+                        "x-apidog-orders": ["code", "message", "params"]
+                      },
+                      "x-apidog-orders": [],
+                      "properties": {},
+                      "x-apidog-ignore-properties": []
+                    }
+                  },
+                  "x-apidog-orders": ["01KVTM7N40VAJGSFV3M4YZFRRE"],
+                  "required": ["success", "errorCode", "message", "error"],
+                  "x-apidog-refs": {
+                    "01KVTM7N40VAJGSFV3M4YZFRRE": {
+                      "$ref": "#/components/schemas/ErrorResponse"
+                    }
+                  },
+                  "x-apidog-ignore-properties": [
+                    "success",
+                    "errorCode",
+                    "message",
+                    "error",
+                    "details"
+                  ]
+                }
+              }
+            },
+            "x-apidog-name": "UnprocessableContent",
+            "x-apidog-ordering": 6
+          },
+          "429": {
+            "$ref": "#/components/responses/TooManyRequests",
+            "description": "",
+            "x-apidog-ordering": 2
+          },
+          "500": {
+            "$ref": "#/components/responses/InternalServerError",
+            "description": "",
+            "x-apidog-ordering": 1
+          }
+        },
+        "security": [],
+        "x-apidog-folder": "Auth",
+        "x-apidog-status": "developing",
+        "x-apidog-maintainer": "Mohammad Ashraf",
+        "x-run-in-apidog": "https://app.apidog.com/web/project/1308771/apis/api-38280966-run"
+      }
+    },
+    "/api/v1/auth/forgot-password": {
+      "post": {
+        "summary": "Forgot password",
+        "deprecated": false,
+        "description": "Initiates the password recovery flow and sends a 6-digit OTP code to the user's email address",
+        "tags": ["Auth"],
+        "parameters": [],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "email": {
+                    "type": "string",
+                    "x-apidog-mock": "{{$internet.email}}"
+                  }
+                },
+                "x-apidog-orders": ["01KVP4KPY4EYQ8PZ8A0W0PRMKC"],
+                "required": ["email"],
+                "x-apidog-refs": {
+                  "01KVP4KPY4EYQ8PZ8A0W0PRMKC": {
+                    "$ref": "#/components/schemas/ForgotPasswordRequest"
+                  }
+                },
+                "x-apidog-ignore-properties": ["email"]
+              },
+              "example": {
+                "email": "Damian_Berge@yahoo.com"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean",
+                      "const": true,
+                      "description": "Indicates if the reset code was successfully sent"
+                    },
+                    "message": {
+                      "type": "string",
+                      "x-apidog-mock": "Password reset code sent to your email address.",
+                      "description": "Feedback message for the user interface"
+                    },
+                    "timestamp": {
+                      "type": "string",
+                      "format": "date-time",
+                      "x-apidog-mock": "{{$date.anytime}}",
+                      "description": "ISO 8601 timestamp of the response"
+                    }
+                  },
+                  "x-apidog-orders": ["01KVP4WQWWFNHSG89PRMQEETE8"],
+                  "required": ["success", "message"],
+                  "x-apidog-refs": {
+                    "01KVP4WQWWFNHSG89PRMQEETE8": {
+                      "$ref": "#/components/schemas/ForgotPasswordResponse"
+                    }
+                  },
+                  "x-apidog-ignore-properties": [
+                    "success",
+                    "message",
+                    "timestamp"
+                  ]
+                }
+              }
+            },
+            "headers": {},
+            "x-apidog-name": "Success",
+            "x-apidog-ordering": 0
+          },
+          "400": {
+            "$ref": "#/components/responses/BadRequest",
+            "description": "",
+            "x-apidog-ordering": 3
+          },
+          "405": {
+            "$ref": "#/components/responses/MethodNotAllowed",
+            "description": "",
+            "x-apidog-ordering": 4
+          },
+          "415": {
+            "$ref": "#/components/responses/UnsupportedMediaType",
+            "description": "",
+            "x-apidog-ordering": 5
+          },
+          "422": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "title": "",
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean",
+                      "const": false,
+                      "description": "Always false for error responses",
+                      "example": false
+                    },
+                    "errorCode": {
+                      "oneOf": [
+                        {
+                          "description": "One of the standard global error codes.",
+                          "$ref": "#/components/schemas/GlobalErrorCode"
+                        }
+                      ]
+                    },
+                    "message": {
+                      "type": "string",
+                      "description": "Default human-readable error description.",
+                      "x-apidog-mock": "An error occurred while processing the request."
+                    },
+                    "error": {
+                      "type": "string",
+                      "description": "HTTP standard status error phrase.",
+                      "x-apidog-mock": "Bad Request"
+                    },
+                    "details": {
+                      "type": "object",
+                      "description": "Structured field-specific error details mapped by field name, optimized for localization.",
+                      "additionalProperties": {
+                        "type": "object",
+                        "required": ["code", "message"],
+                        "properties": {
+                          "code": {
+                            "type": "string",
+                            "description": "Machine-readable localization key (e.g., REQUIRED, TOO_SHORT, INVALID_FORMAT).",
+                            "x-apidog-mock": "TOO_SHORT"
+                          },
+                          "message": {
+                            "type": "string",
+                            "description": "Default human-readable fallback message.",
+                            "x-apidog-mock": "Must be at least 8 characters."
+                          },
+                          "params": {
+                            "type": "object",
+                            "description": "Optional interpolation parameters for localization strings.",
+                            "properties": {
+                              "min": {
+                                "type": "number",
+                                "description": "Minimum value or length constraint."
+                              },
+                              "max": {
+                                "type": "number",
+                                "description": "Maximum value or length constraint."
+                              },
+                              "length": {
+                                "type": "integer",
+                                "description": "Exact length constraint."
+                              },
+                              "allowedValues": {
+                                "type": "array",
+                                "description": "List of allowed values for enum validation.",
+                                "items": {
+                                  "type": "string"
+                                }
+                              }
+                            },
+                            "additionalProperties": true,
+                            "x-apidog-mock": {
+                              "min": 8
+                            },
+                            "x-apidog-orders": [
+                              "min",
+                              "max",
+                              "length",
+                              "allowedValues"
+                            ]
+                          }
+                        },
+                        "additionalProperties": false,
+                        "x-apidog-orders": ["code", "message", "params"]
+                      },
+                      "x-apidog-orders": [],
+                      "properties": {},
+                      "x-apidog-ignore-properties": []
+                    }
+                  },
+                  "x-apidog-orders": ["01KVTMCX32SB1CGJMM12AR4G0A"],
+                  "required": ["success", "errorCode", "message", "error"],
+                  "x-apidog-refs": {
+                    "01KVTMCX32SB1CGJMM12AR4G0A": {
+                      "$ref": "#/components/schemas/ErrorResponse"
+                    }
+                  },
+                  "x-apidog-ignore-properties": [
+                    "success",
+                    "errorCode",
+                    "message",
+                    "error",
+                    "details"
+                  ]
+                }
+              }
+            },
+            "x-apidog-name": "UnprocessableContent",
+            "x-apidog-ordering": 6
+          },
+          "429": {
+            "$ref": "#/components/responses/TooManyRequests",
+            "description": "",
+            "x-apidog-ordering": 2
+          },
+          "500": {
+            "$ref": "#/components/responses/InternalServerError",
+            "description": "",
+            "x-apidog-ordering": 1
+          }
+        },
+        "security": [],
+        "x-apidog-folder": "Auth",
+        "x-apidog-status": "developing",
+        "x-apidog-maintainer": "Mohammad Ashraf",
+        "x-run-in-apidog": "https://app.apidog.com/web/project/1308771/apis/api-38285489-run"
+      }
+    },
+    "/api/v1/verify-otp": {
+      "post": {
+        "summary": "Verify OTP",
+        "deprecated": false,
+        "description": "Validates the 6-digit email verification code before allowing password reset",
+        "tags": ["Auth"],
+        "parameters": [],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "email": {
+                    "type": "string",
+                    "format": "email",
+                    "description": "User's registered email address",
+                    "x-apidog-mock": "{{$internet.email}}"
+                  },
+                  "otp": {
+                    "type": "string",
+                    "description": "The 6-digit one-time verification code received via email",
+                    "minLength": 6,
+                    "maxLength": 6,
+                    "x-apidog-mock": "123456"
+                  }
+                },
+                "x-apidog-orders": ["01KVQ42X7ND56YRMB40YAGD0B2"],
+                "required": ["email", "otp"],
+                "x-apidog-refs": {
+                  "01KVQ42X7ND56YRMB40YAGD0B2": {
+                    "$ref": "#/components/schemas/VerifyOtpRequest"
+                  }
+                },
+                "x-apidog-ignore-properties": ["email", "otp"]
+              },
+              "example": {
+                "email": "Elsie.Rutherford@gmail.com",
+                "otp": "123456"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean",
+                      "const": true,
+                      "description": "Indicates if the verification code is valid"
+                    },
+                    "message": {
+                      "type": "string",
+                      "const": "OTP code verified successfully.",
+                      "description": "Success message for the user interface"
+                    },
+                    "timestamp": {
+                      "type": "string",
+                      "format": "date-time",
+                      "x-apidog-mock": "{{$date.anytime}}"
+                    },
+                    "data": {
+                      "type": "object",
+                      "properties": {
+                        "resetToken": {
+                          "type": "string",
+                          "description": "The temporary validation token received after successfully verifying the OTP.",
+                          "x-apidog-mock": "{{$string.alphanumeric(length=32)}}"
+                        }
+                      },
+                      "required": ["resetToken"],
+                      "x-apidog-orders": ["resetToken"],
+                      "x-apidog-ignore-properties": []
+                    }
+                  },
+                  "x-apidog-orders": ["01KVQ447STY15SJ9TNNS9N8AKY"],
+                  "required": ["success", "message", "data"],
+                  "x-apidog-refs": {
+                    "01KVQ447STY15SJ9TNNS9N8AKY": {
+                      "$ref": "#/components/schemas/VerifyOtpResponse"
+                    }
+                  },
+                  "x-apidog-ignore-properties": [
+                    "success",
+                    "message",
+                    "timestamp",
+                    "data"
+                  ]
+                }
+              }
+            },
+            "headers": {},
+            "x-apidog-name": "Success",
+            "x-apidog-ordering": 0
+          },
+          "400": {
+            "$ref": "#/components/responses/BadRequest",
+            "description": "",
+            "x-apidog-ordering": 3
+          },
+          "405": {
+            "$ref": "#/components/responses/MethodNotAllowed",
+            "description": "",
+            "x-apidog-ordering": 4
+          },
+          "415": {
+            "$ref": "#/components/responses/UnsupportedMediaType",
+            "description": "",
+            "x-apidog-ordering": 5
+          },
+          "422": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "title": "",
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean",
+                      "const": false,
+                      "description": "Always false for error responses",
+                      "example": false
+                    },
+                    "errorCode": {
+                      "oneOf": [
+                        {
+                          "description": "One of the standard global error codes.",
+                          "$ref": "#/components/schemas/GlobalErrorCode"
+                        }
+                      ]
+                    },
+                    "message": {
+                      "type": "string",
+                      "description": "Default human-readable error description.",
+                      "x-apidog-mock": "An error occurred while processing the request."
+                    },
+                    "error": {
+                      "type": "string",
+                      "description": "HTTP standard status error phrase.",
+                      "x-apidog-mock": "Bad Request"
+                    },
+                    "details": {
+                      "type": "object",
+                      "description": "Structured field-specific error details mapped by field name, optimized for localization.",
+                      "additionalProperties": {
+                        "type": "object",
+                        "required": ["code", "message"],
+                        "properties": {
+                          "code": {
+                            "type": "string",
+                            "description": "Machine-readable localization key (e.g., REQUIRED, TOO_SHORT, INVALID_FORMAT).",
+                            "x-apidog-mock": "TOO_SHORT"
+                          },
+                          "message": {
+                            "type": "string",
+                            "description": "Default human-readable fallback message.",
+                            "x-apidog-mock": "Must be at least 8 characters."
+                          },
+                          "params": {
+                            "type": "object",
+                            "description": "Optional interpolation parameters for localization strings.",
+                            "properties": {
+                              "min": {
+                                "type": "number",
+                                "description": "Minimum value or length constraint."
+                              },
+                              "max": {
+                                "type": "number",
+                                "description": "Maximum value or length constraint."
+                              },
+                              "length": {
+                                "type": "integer",
+                                "description": "Exact length constraint."
+                              },
+                              "allowedValues": {
+                                "type": "array",
+                                "description": "List of allowed values for enum validation.",
+                                "items": {
+                                  "type": "string"
+                                }
+                              }
+                            },
+                            "additionalProperties": true,
+                            "x-apidog-mock": {
+                              "min": 8
+                            },
+                            "x-apidog-orders": [
+                              "min",
+                              "max",
+                              "length",
+                              "allowedValues"
+                            ]
+                          }
+                        },
+                        "additionalProperties": false,
+                        "x-apidog-orders": ["code", "message", "params"]
+                      },
+                      "x-apidog-orders": [],
+                      "properties": {},
+                      "x-apidog-ignore-properties": []
+                    }
+                  },
+                  "x-apidog-orders": ["01KVTMH9QVKBF4C4F61EFYSQHS"],
+                  "required": ["success", "errorCode", "message", "error"],
+                  "x-apidog-refs": {
+                    "01KVTMH9QVKBF4C4F61EFYSQHS": {
+                      "$ref": "#/components/schemas/ErrorResponse"
+                    }
+                  },
+                  "x-apidog-ignore-properties": [
+                    "success",
+                    "errorCode",
+                    "message",
+                    "error",
+                    "details"
+                  ]
+                }
+              }
+            },
+            "x-apidog-name": "UnprocessableContent",
+            "x-apidog-ordering": 6
+          },
+          "429": {
+            "$ref": "#/components/responses/TooManyRequests",
+            "description": "",
+            "x-apidog-ordering": 2
+          },
+          "500": {
+            "$ref": "#/components/responses/InternalServerError",
+            "description": "",
+            "x-apidog-ordering": 1
+          }
+        },
+        "security": [],
+        "x-apidog-folder": "Auth",
+        "x-apidog-status": "developing",
+        "x-apidog-maintainer": "Mohammad Ashraf",
+        "x-run-in-apidog": "https://app.apidog.com/web/project/1308771/apis/api-38307483-run"
+      }
+    },
+    "/api/v1/auth/reset-password": {
+      "post": {
+        "summary": "Reset password",
+        "deprecated": false,
+        "description": "Submits a new password to be saved, verifying it against the email and OTP code",
+        "tags": ["Auth"],
+        "parameters": [],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "email": {
+                    "type": "string",
+                    "format": "email",
+                    "description": "User's registered email address",
+                    "x-apidog-mock": "{{$internet.email}}"
+                  },
+                  "resetToken": {
+                    "type": "string",
+                    "description": "The temporary verification token received after verifying the OTP.",
+                    "x-apidog-mock": "{{$string.alphanumeric(length=32)}}"
+                  },
+                  "password": {
+                    "type": "string",
+                    "description": "The new secure password (minimum 8 characters).",
+                    "minLength": 8,
+                    "x-apidog-mock": "{{$internet.password}}"
+                  }
+                },
+                "x-apidog-orders": ["01KVP59DF6486V1ZFERPH0VW58"],
+                "required": ["email", "resetToken", "password"],
+                "x-apidog-refs": {
+                  "01KVP59DF6486V1ZFERPH0VW58": {
+                    "$ref": "#/components/schemas/ResetPasswordRequest"
+                  }
+                },
+                "x-apidog-ignore-properties": [
+                  "email",
+                  "resetToken",
+                  "password"
+                ]
+              },
+              "example": {
+                "email": "Juliana_Abbott5@gmail.com",
+                "resetToken": "9sF8PcG9CEwQSmGV8hKafz8owN7bWg10",
+                "password": "ueEicNuDQl6OPpW"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean",
+                      "const": true,
+                      "description": "Indicates if the password was successfully reset"
+                    },
+                    "message": {
+                      "type": "string",
+                      "const": "Your password has been successfully reset. You can now log in.",
+                      "description": "Success message for the user interface"
+                    },
+                    "timestamp": {
+                      "type": "string",
+                      "format": "date-time",
+                      "x-apidog-mock": "{{$date.anytime}}"
+                    }
+                  },
+                  "x-apidog-orders": ["01KVP5A93RCQ0XDVHH1QXADRF3"],
+                  "required": ["success", "message"],
+                  "x-apidog-refs": {
+                    "01KVP5A93RCQ0XDVHH1QXADRF3": {
+                      "$ref": "#/components/schemas/ResetPasswordResponse"
+                    }
+                  },
+                  "x-apidog-ignore-properties": [
+                    "success",
+                    "message",
+                    "timestamp"
+                  ]
+                }
+              }
+            },
+            "headers": {},
+            "x-apidog-name": "Success",
+            "x-apidog-ordering": 0
+          },
+          "400": {
+            "$ref": "#/components/responses/BadRequest",
+            "description": "",
+            "x-apidog-ordering": 3
+          },
+          "405": {
+            "$ref": "#/components/responses/MethodNotAllowed",
+            "description": "",
+            "x-apidog-ordering": 4
+          },
+          "415": {
+            "$ref": "#/components/responses/UnsupportedMediaType",
+            "description": "",
+            "x-apidog-ordering": 5
+          },
+          "422": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "title": "",
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean",
+                      "const": false,
+                      "description": "Always false for error responses",
+                      "example": false
+                    },
+                    "errorCode": {
+                      "oneOf": [
+                        {
+                          "description": "One of the standard global error codes.",
+                          "$ref": "#/components/schemas/GlobalErrorCode"
+                        }
+                      ]
+                    },
+                    "message": {
+                      "type": "string",
+                      "description": "Default human-readable error description.",
+                      "x-apidog-mock": "An error occurred while processing the request."
+                    },
+                    "error": {
+                      "type": "string",
+                      "description": "HTTP standard status error phrase.",
+                      "x-apidog-mock": "Bad Request"
+                    },
+                    "details": {
+                      "type": "object",
+                      "description": "Structured field-specific error details mapped by field name, optimized for localization.",
+                      "additionalProperties": {
+                        "type": "object",
+                        "required": ["code", "message"],
+                        "properties": {
+                          "code": {
+                            "type": "string",
+                            "description": "Machine-readable localization key (e.g., REQUIRED, TOO_SHORT, INVALID_FORMAT).",
+                            "x-apidog-mock": "TOO_SHORT"
+                          },
+                          "message": {
+                            "type": "string",
+                            "description": "Default human-readable fallback message.",
+                            "x-apidog-mock": "Must be at least 8 characters."
+                          },
+                          "params": {
+                            "type": "object",
+                            "description": "Optional interpolation parameters for localization strings.",
+                            "properties": {
+                              "min": {
+                                "type": "number",
+                                "description": "Minimum value or length constraint."
+                              },
+                              "max": {
+                                "type": "number",
+                                "description": "Maximum value or length constraint."
+                              },
+                              "length": {
+                                "type": "integer",
+                                "description": "Exact length constraint."
+                              },
+                              "allowedValues": {
+                                "type": "array",
+                                "description": "List of allowed values for enum validation.",
+                                "items": {
+                                  "type": "string"
+                                }
+                              }
+                            },
+                            "additionalProperties": true,
+                            "x-apidog-mock": {
+                              "min": 8
+                            },
+                            "x-apidog-orders": [
+                              "min",
+                              "max",
+                              "length",
+                              "allowedValues"
+                            ]
+                          }
+                        },
+                        "additionalProperties": false,
+                        "x-apidog-orders": ["code", "message", "params"]
+                      },
+                      "x-apidog-orders": [],
+                      "properties": {},
+                      "x-apidog-ignore-properties": []
+                    }
+                  },
+                  "x-apidog-orders": ["01KVTNJQ0AC0D7FKV1VBE81VFR"],
+                  "required": ["success", "errorCode", "message", "error"],
+                  "x-apidog-refs": {
+                    "01KVTNJQ0AC0D7FKV1VBE81VFR": {
+                      "$ref": "#/components/schemas/ErrorResponse"
+                    }
+                  },
+                  "x-apidog-ignore-properties": [
+                    "success",
+                    "errorCode",
+                    "message",
+                    "error",
+                    "details"
+                  ]
+                }
+              }
+            },
+            "x-apidog-name": "UnprocessableContent",
+            "x-apidog-ordering": 6
+          },
+          "429": {
+            "$ref": "#/components/responses/TooManyRequests",
+            "description": "",
+            "x-apidog-ordering": 2
+          },
+          "500": {
+            "$ref": "#/components/responses/InternalServerError",
+            "description": "",
+            "x-apidog-ordering": 1
+          },
+          "x-apidog-additional-responses": [
+            {
+              "statusCode": 400,
+              "description": "",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "title": "",
+                    "type": "object",
+                    "properties": {
+                      "success": {
+                        "type": "boolean",
+                        "const": false,
+                        "description": "Always false for error responses",
+                        "example": false
+                      },
+                      "errorCode": {
+                        "oneOf": [
+                          {
+                            "description": "One of the standard global error codes.",
+                            "$ref": "#/components/schemas/GlobalErrorCode"
+                          }
+                        ]
+                      },
+                      "message": {
+                        "type": "string",
+                        "description": "Default human-readable error description.",
+                        "x-apidog-mock": "An error occurred while processing the request."
+                      },
+                      "error": {
+                        "type": "string",
+                        "description": "HTTP standard status error phrase.",
+                        "x-apidog-mock": "Bad Request"
+                      },
+                      "details": {
+                        "type": "object",
+                        "description": "Structured field-specific error details mapped by field name, optimized for localization.",
+                        "additionalProperties": {
+                          "type": "object",
+                          "required": ["code", "message"],
+                          "properties": {
+                            "code": {
+                              "type": "string",
+                              "description": "Machine-readable localization key (e.g., REQUIRED, TOO_SHORT, INVALID_FORMAT).",
+                              "x-apidog-mock": "TOO_SHORT"
+                            },
+                            "message": {
+                              "type": "string",
+                              "description": "Default human-readable fallback message.",
+                              "x-apidog-mock": "Must be at least 8 characters."
+                            },
+                            "params": {
+                              "type": "object",
+                              "description": "Optional interpolation parameters for localization strings.",
+                              "properties": {
+                                "min": {
+                                  "type": "number",
+                                  "description": "Minimum value or length constraint."
+                                },
+                                "max": {
+                                  "type": "number",
+                                  "description": "Maximum value or length constraint."
+                                },
+                                "length": {
+                                  "type": "integer",
+                                  "description": "Exact length constraint."
+                                },
+                                "allowedValues": {
+                                  "type": "array",
+                                  "description": "List of allowed values for enum validation.",
+                                  "items": {
+                                    "type": "string"
+                                  }
+                                }
+                              },
+                              "additionalProperties": true,
+                              "x-apidog-mock": {
+                                "min": 8
+                              },
+                              "x-apidog-orders": [
+                                "min",
+                                "max",
+                                "length",
+                                "allowedValues"
+                              ]
+                            }
+                          },
+                          "additionalProperties": false,
+                          "x-apidog-orders": ["code", "message", "params"]
+                        },
+                        "x-apidog-orders": [],
+                        "properties": {},
+                        "x-apidog-ignore-properties": []
+                      }
+                    },
+                    "x-apidog-orders": ["01KVTNMT9TGQ5Q9Y1DB8VAGPYX"],
+                    "required": ["success", "errorCode", "message", "error"],
+                    "x-apidog-refs": {
+                      "01KVTNMT9TGQ5Q9Y1DB8VAGPYX": {
+                        "$ref": "#/components/schemas/ErrorResponse"
+                      }
+                    },
+                    "x-apidog-ignore-properties": [
+                      "success",
+                      "errorCode",
+                      "message",
+                      "error",
+                      "details"
+                    ]
+                  }
+                }
+              },
+              "x-apidog-name": "BadRequest",
+              "x-apidog-ordering": 7
+            }
+          ]
+        },
+        "security": [],
+        "x-apidog-folder": "Auth",
+        "x-apidog-status": "developing",
+        "x-apidog-maintainer": "Mohammad Ashraf",
+        "x-run-in-apidog": "https://app.apidog.com/web/project/1308771/apis/api-38285493-run"
+      }
+    },
+    "/api/v1/plants": {
+      "get": {
+        "summary": "List Plants",
+        "deprecated": false,
+        "description": "",
+        "tags": ["Plant"],
+        "parameters": [
+          {
+            "name": "category",
+            "in": "query",
+            "description": "",
+            "required": false,
+            "example": "Indoor",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "search",
+            "in": "query",
+            "description": "",
+            "required": false,
+            "example": "Monstera",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "page",
+            "in": "query",
+            "description": "The page number to retrieve",
+            "required": false,
+            "example": 1,
+            "schema": {
+              "type": "integer"
+            }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "description": "Number of items per page",
+            "required": false,
+            "example": 10,
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean",
+                      "default": true,
+                      "description": "Indicates if the request was successful"
+                    },
+                    "message": {
+                      "type": "string",
+                      "default": "Successfully listed botanical catalog.",
+                      "description": "Response status message"
+                    },
+                    "timestamp": {
+                      "type": "string",
+                      "format": "date-time",
+                      "description": "Response timestamp in ISO 8601 format"
+                    },
+                    "data": {
+                      "type": "array",
+                      "description": "List of plant species",
+                      "items": {
+                        "type": "object",
+                        "x-apidog-refs": {
+                          "01KVP0QQ6MDFWP47YNVGPNRJPS": {
+                            "$ref": "#/components/schemas/Plant",
+                            "x-apidog-overrides": {}
+                          }
+                        },
+                        "properties": {
+                          "id": {
+                            "type": "integer",
+                            "description": "Unique identifier of the plant species",
+                            "x-apidog-mock": "{{$number.int}}"
+                          },
+                          "commonName": {
+                            "type": "string",
+                            "description": "Common name of the plant species",
+                            "x-apidog-mock": "Monstera Deliciosa"
+                          },
+                          "scientificName": {
+                            "type": "string",
+                            "description": "Scientific/botanical name of the species",
+                            "x-apidog-mock": "Monstera deliciosa"
+                          },
+                          "family": {
+                            "type": "string",
+                            "description": "Botanical family classification",
+                            "x-apidog-mock": "Araceae"
+                          },
+                          "about": {
+                            "type": "string",
+                            "description": "A brief overview or history of the plant",
+                            "x-apidog-mock": "Popular tropical climbing plant native to southern Mexico."
+                          },
+                          "temperature": {
+                            "type": "string",
+                            "description": "Optimal temperature range for growth",
+                            "x-apidog-mock": "18°C - 30°C"
+                          },
+                          "light": {
+                            "type": "string",
+                            "description": "Light requirements for the plant",
+                            "x-apidog-mock": "Bright indirect sunlight"
+                          },
+                          "water": {
+                            "type": "string",
+                            "description": "Watering instructions",
+                            "x-apidog-mock": "Water thoroughly when the top 2-3 inches of soil is dry."
+                          },
+                          "whereToGrow": {
+                            "type": "string",
+                            "description": "Ideal location or container requirements",
+                            "x-apidog-mock": "Indoor pots, greenhouse, or warm patio."
+                          },
+                          "toxicity": {
+                            "type": "string",
+                            "description": "Toxicity information regarding pets/humans",
+                            "x-apidog-mock": "Toxic to cats and dogs due to calcium oxalate."
+                          },
+                          "howToGrow": {
+                            "type": "string",
+                            "description": "Care and planting instructions",
+                            "x-apidog-mock": "Use well-draining soil mix and provide a moss pole for support."
+                          },
+                          "category": {
+                            "type": "array",
+                            "items": {
+                              "type": "string"
+                            },
+                            "description": "Botanical and care categories",
+                            "x-apidog-mock": ["Indoor", "Foliage", "Climbing"]
+                          },
+                          "kingdom": {
+                            "type": "string",
+                            "description": "Biological kingdom",
+                            "x-apidog-mock": "Plantae"
+                          },
+                          "order": {
+                            "type": "string",
+                            "description": "Biological order",
+                            "x-apidog-mock": "Alismatales"
+                          },
+                          "imageUrl": {
+                            "type": "string",
+                            "format": "uri",
+                            "description": "URL to a high-resolution photo of the plant",
+                            "x-apidog-mock": "https://cdn.plantera.com/plants/monstera.jpg"
+                          },
+                          "wateringFrequency": {
+                            "type": "number",
+                            "description": "Average number of days between waterings",
+                            "x-apidog-mock": 7,
+                            "nullable": true
+                          },
+                          "fertilizingFrequency": {
+                            "type": "number",
+                            "description": "Average number of days between fertilizing",
+                            "x-apidog-mock": 30,
+                            "nullable": true
+                          }
+                        },
+                        "x-apidog-orders": ["01KVP0QQ6MDFWP47YNVGPNRJPS"],
+                        "required": [
+                          "id",
+                          "commonName",
+                          "scientificName",
+                          "family",
+                          "about",
+                          "temperature",
+                          "light",
+                          "water",
+                          "whereToGrow",
+                          "toxicity",
+                          "howToGrow",
+                          "category",
+                          "kingdom",
+                          "order",
+                          "imageUrl"
+                        ],
+                        "x-apidog-ignore-properties": [
+                          "id",
+                          "commonName",
+                          "scientificName",
+                          "family",
+                          "about",
+                          "temperature",
+                          "light",
+                          "water",
+                          "whereToGrow",
+                          "toxicity",
+                          "howToGrow",
+                          "category",
+                          "kingdom",
+                          "order",
+                          "imageUrl",
+                          "wateringFrequency",
+                          "fertilizingFrequency"
+                        ]
+                      }
+                    },
+                    "meta": {
+                      "type": "object",
+                      "properties": {
+                        "page": {
+                          "type": "integer",
+                          "description": "Current page number",
+                          "x-apidog-mock": 1
+                        },
+                        "limit": {
+                          "type": "integer",
+                          "description": "Number of items per page",
+                          "x-apidog-mock": 10
+                        },
+                        "totalCount": {
+                          "type": "integer",
+                          "description": "Total number of items in the database",
+                          "x-apidog-mock": 50
+                        },
+                        "totalPages": {
+                          "type": "integer",
+                          "description": "Total number of pages",
+                          "x-apidog-mock": 5
+                        }
+                      },
+                      "x-apidog-orders": ["01KVP0R69KE1YZH4PATVY92A3F"],
+                      "x-apidog-refs": {
+                        "01KVP0R69KE1YZH4PATVY92A3F": {
+                          "$ref": "#/components/schemas/PaginationMeta"
+                        }
+                      },
+                      "required": ["page", "limit", "totalCount", "totalPages"],
+                      "x-apidog-ignore-properties": [
+                        "page",
+                        "limit",
+                        "totalCount",
+                        "totalPages"
+                      ]
+                    }
+                  },
+                  "x-apidog-orders": ["01KVNY5RWQYXR3MFA0BR53MC9A"],
+                  "required": ["success", "data", "meta"],
+                  "x-apidog-refs": {
+                    "01KVNY5RWQYXR3MFA0BR53MC9A": {
+                      "$ref": "#/components/schemas/PlantListResponse"
+                    }
+                  },
+                  "x-apidog-ignore-properties": [
+                    "success",
+                    "message",
+                    "timestamp",
+                    "data",
+                    "meta"
+                  ]
+                }
+              }
+            },
+            "headers": {},
+            "x-apidog-name": "Success",
+            "x-apidog-ordering": 0
+          },
+          "400": {
+            "$ref": "#/components/responses/BadRequest",
+            "description": "",
+            "x-apidog-ordering": 3
+          },
+          "405": {
+            "$ref": "#/components/responses/MethodNotAllowed",
+            "description": "",
+            "x-apidog-ordering": 4
+          },
+          "415": {
+            "$ref": "#/components/responses/UnsupportedMediaType",
+            "description": "",
+            "x-apidog-ordering": 5
+          },
+          "429": {
+            "$ref": "#/components/responses/TooManyRequests",
+            "description": "",
+            "x-apidog-ordering": 2
+          },
+          "500": {
+            "$ref": "#/components/responses/InternalServerError",
+            "description": "",
+            "x-apidog-ordering": 1
+          }
+        },
+        "security": [
+          {
+            "JWT Bearer": [],
+            "x-apidog": {
+              "schemeGroups": [
+                {
+                  "id": "p7aaBSVoHM5-oTP6xkoPz",
+                  "schemeIds": ["JWT Bearer"]
+                }
+              ],
+              "required": true,
+              "use": {
+                "id": "p7aaBSVoHM5-oTP6xkoPz",
+                "configs": {
+                  "JWT Bearer": {
+                    "authConfigs": {
+                      "x-apidog": {
+                        "token": "{{accessToken}}"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        ],
+        "x-apidog-folder": "Plant",
+        "x-apidog-status": "developing",
+        "x-run-in-apidog": "https://app.apidog.com/web/project/1308771/apis/api-38283165-run"
+      }
+    },
+    "/api/v1/plants/{id}": {
+      "get": {
+        "summary": "Get Plant By Id",
+        "deprecated": false,
+        "description": "Retrieves detailed properties and care guidelines for a single plant",
+        "tags": ["Plant"],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "The unique plant identifier",
+            "required": true,
+            "example": "{{$number.int}}",
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean",
+                      "default": true,
+                      "description": "Indicates if the request was successful"
+                    },
+                    "message": {
+                      "type": "string",
+                      "default": "Botanical entry operation success.",
+                      "description": "Response status message"
+                    },
+                    "timestamp": {
+                      "type": "string",
+                      "format": "date-time",
+                      "description": "Response timestamp in ISO 8601 format"
+                    },
+                    "data": {
+                      "$ref": "#/components/schemas/Plant"
+                    }
+                  },
+                  "x-apidog-orders": ["01KVNZ3P1CWCYYXKV1RAF186YY"],
+                  "required": ["success", "data"],
+                  "x-apidog-refs": {
+                    "01KVNZ3P1CWCYYXKV1RAF186YY": {
+                      "$ref": "#/components/schemas/PlantResponse"
+                    }
+                  },
+                  "x-apidog-ignore-properties": [
+                    "success",
+                    "message",
+                    "timestamp",
+                    "data"
+                  ]
+                }
+              }
+            },
+            "headers": {},
+            "x-apidog-name": "Success",
+            "x-apidog-ordering": 0
+          },
+          "400": {
+            "$ref": "#/components/responses/BadRequest",
+            "description": "",
+            "x-apidog-ordering": 3
+          },
+          "405": {
+            "$ref": "#/components/responses/MethodNotAllowed",
+            "description": "",
+            "x-apidog-ordering": 4
+          },
+          "415": {
+            "$ref": "#/components/responses/UnsupportedMediaType",
+            "description": "",
+            "x-apidog-ordering": 5
+          },
+          "429": {
+            "$ref": "#/components/responses/TooManyRequests",
+            "description": "",
+            "x-apidog-ordering": 2
+          },
+          "500": {
+            "$ref": "#/components/responses/InternalServerError",
+            "description": "",
+            "x-apidog-ordering": 1
+          }
+        },
+        "security": [
+          {
+            "JWT Bearer": [],
+            "x-apidog": {
+              "schemeGroups": [
+                {
+                  "id": "p7aaBSVoHM5-oTP6xkoPz",
+                  "schemeIds": ["JWT Bearer"]
+                }
+              ],
+              "required": true,
+              "use": {
+                "id": "p7aaBSVoHM5-oTP6xkoPz",
+                "configs": {
+                  "JWT Bearer": {
+                    "authConfigs": {
+                      "x-apidog": {
+                        "token": "{{accessToken}}"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        ],
+        "x-apidog-folder": "Plant",
+        "x-apidog-status": "developing",
+        "x-run-in-apidog": "https://app.apidog.com/web/project/1308771/apis/api-38283181-run"
+      }
+    },
+    "/api/v1/diagnostics": {
+      "post": {
+        "summary": "Run AI disease diagnostics",
+        "deprecated": false,
+        "description": "Submits a plant photo to detect botanical diseases and retrieve a treatment plan",
+        "tags": ["Smart Diagnostics"],
+        "parameters": [],
+        "requestBody": {
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "image": {
+                    "format": "binary",
+                    "type": "string",
+                    "description": "Plant leaf snapshot image file to analyze",
+                    "example": ""
+                  }
+                },
+                "required": ["image"]
+              },
+              "example": {
+                "image": ""
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean",
+                      "const": true,
+                      "description": "Indicates if the request was successful",
+                      "x-apidog-mock": "true"
+                    },
+                    "message": {
+                      "type": "string",
+                      "const": "AI botanical diagnosis scan complete.",
+                      "description": "Response status message",
+                      "x-apidog-mock": "AI botanical diagnosis scan complete"
+                    },
+                    "timestamp": {
+                      "type": "string",
+                      "format": "date-time",
+                      "description": "Response timestamp in ISO 8601 format"
+                    },
+                    "data": {
+                      "$ref": "#/components/schemas/Disease"
+                    }
+                  },
+                  "x-apidog-orders": ["01KVR6CXYEKRVDJ61CP5XSQ33J"],
+                  "x-apidog-refs": {
+                    "01KVR6CXYEKRVDJ61CP5XSQ33J": {
+                      "$ref": "#/components/schemas/DiseaseResponse"
+                    }
+                  },
+                  "required": ["success", "data"],
+                  "x-apidog-ignore-properties": [
+                    "success",
+                    "message",
+                    "timestamp",
+                    "data"
+                  ]
+                }
+              }
+            },
+            "headers": {},
+            "x-apidog-name": "Success",
+            "x-apidog-ordering": 0
+          },
+          "400": {
+            "$ref": "#/components/responses/BadRequest",
+            "description": "",
+            "x-apidog-ordering": 3
+          },
+          "405": {
+            "$ref": "#/components/responses/MethodNotAllowed",
+            "description": "",
+            "x-apidog-ordering": 4
+          },
+          "415": {
+            "$ref": "#/components/responses/UnsupportedMediaType",
+            "description": "",
+            "x-apidog-ordering": 5
+          },
+          "429": {
+            "$ref": "#/components/responses/TooManyRequests",
+            "description": "",
+            "x-apidog-ordering": 2
+          },
+          "500": {
+            "$ref": "#/components/responses/InternalServerError",
+            "description": "",
+            "x-apidog-ordering": 1
+          }
+        },
+        "security": [
+          {
+            "JWT Bearer": [],
+            "x-apidog": {
+              "schemeGroups": [
+                {
+                  "id": "p7aaBSVoHM5-oTP6xkoPz",
+                  "schemeIds": ["JWT Bearer"]
+                }
+              ],
+              "required": true,
+              "use": {
+                "id": "p7aaBSVoHM5-oTP6xkoPz",
+                "configs": {
+                  "JWT Bearer": {
+                    "authConfigs": {
+                      "x-apidog": {
+                        "token": "{{accessToken}}"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        ],
+        "x-apidog-folder": "Smart Diagnostics",
+        "x-apidog-status": "developing",
+        "x-run-in-apidog": "https://app.apidog.com/web/project/1308771/apis/api-38283191-run"
+      }
+    },
+    "/api/v1/my-plants": {
+      "get": {
+        "summary": "Retrieve user's garden plants",
+        "deprecated": false,
+        "description": "Gets the list of all plants in the authenticated user's garden collection ",
+        "tags": ["My Plants"],
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean",
+                      "const": true,
+                      "description": "Indicates if the request was successful"
+                    },
+                    "message": {
+                      "type": "string",
+                      "default": "Successfully retrieved personal virtual garden.",
+                      "description": "Response status message"
+                    },
+                    "timestamp": {
+                      "type": "string",
+                      "format": "date-time",
+                      "description": "Response timestamp in ISO 8601 format"
+                    },
+                    "data": {
+                      "type": "array",
+                      "description": "List of plants in the user's garden",
+                      "items": {
+                        "$ref": "#/components/schemas/MyPlant"
+                      }
+                    },
+                    "page": {
+                      "type": "integer",
+                      "description": "Current page number",
+                      "x-apidog-mock": 1
+                    },
+                    "limit": {
+                      "type": "integer",
+                      "description": "Number of items per page",
+                      "x-apidog-mock": 10
+                    },
+                    "totalCount": {
+                      "type": "integer",
+                      "description": "Total number of items in the database",
+                      "x-apidog-mock": 50
+                    },
+                    "totalPages": {
+                      "type": "integer",
+                      "description": "Total number of pages",
+                      "x-apidog-mock": 5
+                    }
+                  },
+                  "x-apidog-orders": ["01KVP1A8H7H043Q4GPZ6S9BB98"],
+                  "required": [
+                    "success",
+                    "data",
+                    "page",
+                    "limit",
+                    "totalCount",
+                    "totalPages"
+                  ],
+                  "x-apidog-refs": {
+                    "01KVP1A8H7H043Q4GPZ6S9BB98": {
+                      "$ref": "#/components/schemas/MyPlantsListResponse"
+                    }
+                  },
+                  "x-apidog-ignore-properties": [
+                    "success",
+                    "message",
+                    "timestamp",
+                    "data",
+                    "page",
+                    "limit",
+                    "totalCount",
+                    "totalPages"
+                  ]
+                }
+              }
+            },
+            "x-apidog-name": "Success",
+            "x-apidog-ordering": 0
+          },
+          "400": {
+            "$ref": "#/components/responses/BadRequest",
+            "description": "",
+            "x-apidog-ordering": 3
+          },
+          "405": {
+            "$ref": "#/components/responses/MethodNotAllowed",
+            "description": "",
+            "x-apidog-ordering": 4
+          },
+          "415": {
+            "$ref": "#/components/responses/UnsupportedMediaType",
+            "description": "",
+            "x-apidog-ordering": 5
+          },
+          "429": {
+            "$ref": "#/components/responses/TooManyRequests",
+            "description": "",
+            "x-apidog-ordering": 2
+          },
+          "500": {
+            "$ref": "#/components/responses/InternalServerError",
+            "description": "",
+            "x-apidog-ordering": 1
+          }
+        },
+        "security": [
+          {
+            "JWT Bearer": [],
+            "x-apidog": {
+              "schemeGroups": [
+                {
+                  "id": "p7aaBSVoHM5-oTP6xkoPz",
+                  "schemeIds": ["JWT Bearer"]
+                }
+              ],
+              "required": true,
+              "use": {
+                "id": "p7aaBSVoHM5-oTP6xkoPz",
+                "configs": {
+                  "JWT Bearer": {
+                    "authConfigs": {
+                      "x-apidog": {
+                        "token": "{{accessToken}}"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        ],
+        "x-apidog-folder": "My Plants",
+        "x-apidog-status": "developing",
+        "x-run-in-apidog": "https://app.apidog.com/web/project/1308771/apis/api-38283233-run"
+      },
+      "post": {
+        "summary": "Add plant to garden",
+        "deprecated": false,
+        "description": "Adds a plant species from the global encyclopedia to the authenticated user's garden",
+        "tags": ["My Plants"],
+        "parameters": [],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "plantId": {
+                    "type": "integer",
+                    "description": "The ID of the plant species from the global encyclopedia to add to the user's garden",
+                    "x-apidog-mock": "{{$number.int}}"
+                  }
+                },
+                "x-apidog-orders": ["01KVQ4X9TS2C0CK15D7CSPB99D"],
+                "required": ["plantId"],
+                "x-apidog-refs": {
+                  "01KVQ4X9TS2C0CK15D7CSPB99D": {
+                    "$ref": "#/components/schemas/AddToMyPlantsRequest"
+                  }
+                },
+                "x-apidog-ignore-properties": ["plantId"]
+              },
+              "example": {
+                "plantId": 4594183252995320
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean",
+                      "const": true,
+                      "description": "Indicates if the plant was successfully added"
+                    },
+                    "message": {
+                      "type": "string",
+                      "x-apidog-mock": "Plant added to your virtual garden successfully.",
+                      "description": "Success feedback message"
+                    },
+                    "timestamp": {
+                      "type": "string",
+                      "format": "date-time",
+                      "x-apidog-mock": "{{$date.anytime}}"
+                    },
+                    "data": {
+                      "type": "object",
+                      "properties": {
+                        "myPlant": {
+                          "$ref": "#/components/schemas/MyPlant"
+                        }
+                      },
+                      "required": ["myPlant"],
+                      "x-apidog-orders": ["myPlant"],
+                      "x-apidog-ignore-properties": []
+                    }
+                  },
+                  "x-apidog-orders": ["01KVQ4KX4EETHKNQ3AB50BP9F0"],
+                  "required": ["success", "data"],
+                  "x-apidog-refs": {
+                    "01KVQ4KX4EETHKNQ3AB50BP9F0": {
+                      "$ref": "#/components/schemas/AddToMyPlantsResponse"
+                    }
+                  },
+                  "x-apidog-ignore-properties": [
+                    "success",
+                    "message",
+                    "timestamp",
+                    "data"
+                  ]
+                }
+              }
+            },
+            "x-apidog-name": "Success",
+            "x-apidog-ordering": 0
+          },
+          "400": {
+            "$ref": "#/components/responses/BadRequest",
+            "description": "",
+            "x-apidog-ordering": 3
+          },
+          "405": {
+            "$ref": "#/components/responses/MethodNotAllowed",
+            "description": "",
+            "x-apidog-ordering": 4
+          },
+          "415": {
+            "$ref": "#/components/responses/UnsupportedMediaType",
+            "description": "",
+            "x-apidog-ordering": 5
+          },
+          "429": {
+            "$ref": "#/components/responses/TooManyRequests",
+            "description": "",
+            "x-apidog-ordering": 2
+          },
+          "500": {
+            "$ref": "#/components/responses/InternalServerError",
+            "description": "",
+            "x-apidog-ordering": 1
+          }
+        },
+        "security": [
+          {
+            "JWT Bearer": [],
+            "x-apidog": {
+              "schemeGroups": [
+                {
+                  "id": "p7aaBSVoHM5-oTP6xkoPz",
+                  "schemeIds": ["JWT Bearer"]
+                }
+              ],
+              "required": true,
+              "use": {
+                "id": "p7aaBSVoHM5-oTP6xkoPz",
+                "configs": {
+                  "JWT Bearer": {
+                    "authConfigs": {
+                      "x-apidog": {
+                        "token": "{{accessToken}}"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        ],
+        "x-apidog-folder": "My Plants",
+        "x-apidog-status": "developing",
+        "x-run-in-apidog": "https://app.apidog.com/web/project/1308771/apis/api-38308847-run"
+      }
+    },
+    "/api/v1/my-plants/{plantId}": {
+      "delete": {
+        "summary": "Remove plant from garden",
+        "deprecated": false,
+        "description": "Removes a plant entry from the authenticated user's garden collection",
+        "tags": ["My Plants"],
+        "parameters": [
+          {
+            "name": "plantId",
+            "in": "path",
+            "description": "",
+            "required": true,
+            "example": "{{$number.int}}",
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean",
+                      "const": true,
+                      "description": "Indicates if the plant was successfully removed"
+                    },
+                    "message": {
+                      "type": "string",
+                      "x-apidog-mock": "Plant removed from your virtual garden successfully.",
+                      "description": "Success feedback message"
+                    },
+                    "timestamp": {
+                      "type": "string",
+                      "format": "date-time",
+                      "x-apidog-mock": "{{$date.anytime}}"
+                    }
+                  },
+                  "x-apidog-orders": ["01KVQ54JP2CHEJRYDERDV14WVY"],
+                  "required": ["success", "message"],
+                  "x-apidog-refs": {
+                    "01KVQ54JP2CHEJRYDERDV14WVY": {
+                      "$ref": "#/components/schemas/RemoveFromMyPlantsResponse"
+                    }
+                  },
+                  "x-apidog-ignore-properties": [
+                    "success",
+                    "message",
+                    "timestamp"
+                  ]
+                }
+              }
+            },
+            "x-apidog-name": "Success",
+            "x-apidog-ordering": 0
+          },
+          "400": {
+            "$ref": "#/components/responses/BadRequest",
+            "description": "",
+            "x-apidog-ordering": 3
+          },
+          "405": {
+            "$ref": "#/components/responses/MethodNotAllowed",
+            "description": "",
+            "x-apidog-ordering": 4
+          },
+          "415": {
+            "$ref": "#/components/responses/UnsupportedMediaType",
+            "description": "",
+            "x-apidog-ordering": 5
+          },
+          "429": {
+            "$ref": "#/components/responses/TooManyRequests",
+            "description": "",
+            "x-apidog-ordering": 2
+          },
+          "500": {
+            "$ref": "#/components/responses/InternalServerError",
+            "description": "",
+            "x-apidog-ordering": 1
+          }
+        },
+        "security": [
+          {
+            "JWT Bearer": [],
+            "x-apidog": {
+              "schemeGroups": [
+                {
+                  "id": "p7aaBSVoHM5-oTP6xkoPz",
+                  "schemeIds": ["JWT Bearer"]
+                }
+              ],
+              "required": true,
+              "use": {
+                "id": "p7aaBSVoHM5-oTP6xkoPz",
+                "configs": {
+                  "JWT Bearer": {
+                    "authConfigs": {
+                      "x-apidog": {
+                        "token": "{{accessToken}}"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        ],
+        "x-apidog-folder": "My Plants",
+        "x-apidog-status": "developing",
+        "x-run-in-apidog": "https://app.apidog.com/web/project/1308771/apis/api-38309216-run"
+      }
+    },
+    "/api/v1/my-plants/{plantId}/schedule": {
+      "patch": {
+        "summary": "Update care schedule",
+        "deprecated": false,
+        "description": "Sets custom watering and fertilizing frequencies for a plant in the user's garden and recalculates next care dates",
+        "tags": ["My Plants"],
+        "parameters": [
+          {
+            "name": "plantId",
+            "in": "path",
+            "description": "",
+            "required": true,
+            "example": "integer",
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "wateringFrequency": {
+                    "type": "integer",
+                    "description": "Custom watering frequency in days",
+                    "x-apidog-mock": "{{$number.int}}"
+                  },
+                  "fertilizingFrequency": {
+                    "type": "integer",
+                    "description": "Custom fertilizing frequency in days",
+                    "x-apidog-mock": "{{$number.int}}"
+                  }
+                },
+                "x-apidog-orders": ["01KVQ5AAN8VQRS1VHGCFRCMGN9"],
+                "required": ["wateringFrequency", "fertilizingFrequency"],
+                "x-apidog-refs": {
+                  "01KVQ5AAN8VQRS1VHGCFRCMGN9": {
+                    "$ref": "#/components/schemas/UpdateScheduleRequest"
+                  }
+                },
+                "x-apidog-ignore-properties": [
+                  "wateringFrequency",
+                  "fertilizingFrequency"
+                ]
+              },
+              "example": {
+                "wateringFrequency": 7062175938353883,
+                "fertilizingFrequency": 7575461873006157
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean",
+                      "const": true,
+                      "description": "Indicates if the care schedule was updated successfully"
+                    },
+                    "message": {
+                      "type": "string",
+                      "x-apidog-mock": "Care schedule updated successfully.",
+                      "description": "Success feedback message"
+                    },
+                    "timestamp": {
+                      "type": "string",
+                      "format": "date-time",
+                      "x-apidog-mock": "{{$date.anytime}}"
+                    },
+                    "data": {
+                      "type": "object",
+                      "properties": {
+                        "myPlant": {
+                          "$ref": "#/components/schemas/MyPlant"
+                        }
+                      },
+                      "required": ["myPlant"],
+                      "x-apidog-orders": ["myPlant"],
+                      "x-apidog-ignore-properties": []
+                    }
+                  },
+                  "x-apidog-orders": ["01KVQ5CVSB9CVEF6GJJV30Y7B5"],
+                  "required": ["success", "data"],
+                  "x-apidog-refs": {
+                    "01KVQ5CVSB9CVEF6GJJV30Y7B5": {
+                      "$ref": "#/components/schemas/UpdateScheduleResponse"
+                    }
+                  },
+                  "x-apidog-ignore-properties": [
+                    "success",
+                    "message",
+                    "timestamp",
+                    "data"
+                  ]
+                }
+              }
+            },
+            "x-apidog-name": "Success",
+            "x-apidog-ordering": 0
+          },
+          "400": {
+            "$ref": "#/components/responses/BadRequest",
+            "description": "",
+            "x-apidog-ordering": 3
+          },
+          "405": {
+            "$ref": "#/components/responses/MethodNotAllowed",
+            "description": "",
+            "x-apidog-ordering": 4
+          },
+          "415": {
+            "$ref": "#/components/responses/UnsupportedMediaType",
+            "description": "",
+            "x-apidog-ordering": 5
+          },
+          "429": {
+            "$ref": "#/components/responses/TooManyRequests",
+            "description": "",
+            "x-apidog-ordering": 2
+          },
+          "500": {
+            "$ref": "#/components/responses/InternalServerError",
+            "description": "",
+            "x-apidog-ordering": 1
+          }
+        },
+        "security": [
+          {
+            "JWT Bearer": [],
+            "x-apidog": {
+              "schemeGroups": [
+                {
+                  "id": "p7aaBSVoHM5-oTP6xkoPz",
+                  "schemeIds": ["JWT Bearer"]
+                }
+              ],
+              "required": true,
+              "use": {
+                "id": "p7aaBSVoHM5-oTP6xkoPz",
+                "configs": {
+                  "JWT Bearer": {
+                    "authConfigs": {
+                      "x-apidog": {
+                        "token": "{{accessToken}}"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        ],
+        "x-apidog-folder": "My Plants",
+        "x-apidog-status": "developing",
+        "x-run-in-apidog": "https://app.apidog.com/web/project/1308771/apis/api-38309419-run"
+      }
+    },
+    "/api/v1/profile": {
+      "patch": {
+        "summary": "Update Profile",
+        "deprecated": false,
+        "description": "Updates the authenticated user's first name, last name, and/or email address",
+        "tags": ["Profile"],
+        "parameters": [],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "firstName": {
+                    "type": "string",
+                    "description": "User's updated first name",
+                    "x-apidog-mock": "{{$person.firstName}}"
+                  },
+                  "lastName": {
+                    "type": "string",
+                    "description": "User's updated last name",
+                    "x-apidog-mock": "{{$person.lastName}}"
+                  },
+                  "email": {
+                    "type": "string",
+                    "format": "email",
+                    "description": "User's updated email address",
+                    "x-apidog-mock": "{{$internet.email}}"
+                  }
+                },
+                "x-apidog-orders": ["01KVP6Z4WXCKT8G1BQBH9MTHM5"],
+                "x-apidog-refs": {
+                  "01KVP6Z4WXCKT8G1BQBH9MTHM5": {
+                    "$ref": "#/components/schemas/UpdateProfileRequest"
+                  }
+                },
+                "x-apidog-ignore-properties": ["firstName", "lastName", "email"]
+              },
+              "examples": {}
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean",
+                      "const": true,
+                      "description": "Indicates if the profile was successfully updated"
+                    },
+                    "message": {
+                      "type": "string",
+                      "x-apidog-mock": "Profile details updated successfully.",
+                      "description": "User feedback message"
+                    },
+                    "timestamp": {
+                      "type": "string",
+                      "format": "date-time",
+                      "x-apidog-mock": "{{$date.anytime}}"
+                    },
+                    "data": {
+                      "type": "object",
+                      "properties": {
+                        "user": {
+                          "$ref": "#/components/schemas/User"
+                        }
+                      },
+                      "required": ["user"],
+                      "x-apidog-orders": ["user"],
+                      "x-apidog-ignore-properties": []
+                    }
+                  },
+                  "x-apidog-orders": ["01KVQ3P6FFV21DGPQ988HVDG9V"],
+                  "required": ["success", "data"],
+                  "x-apidog-refs": {
+                    "01KVQ3P6FFV21DGPQ988HVDG9V": {
+                      "$ref": "#/components/schemas/UpdateProfileResponse"
+                    }
+                  },
+                  "x-apidog-ignore-properties": [
+                    "success",
+                    "message",
+                    "timestamp",
+                    "data"
+                  ]
+                }
+              }
+            },
+            "headers": {},
+            "x-apidog-name": "Success",
+            "x-apidog-ordering": 0
+          },
+          "400": {
+            "$ref": "#/components/responses/BadRequest",
+            "description": "",
+            "x-apidog-ordering": 3
+          },
+          "405": {
+            "$ref": "#/components/responses/MethodNotAllowed",
+            "description": "",
+            "x-apidog-ordering": 4
+          },
+          "415": {
+            "$ref": "#/components/responses/UnsupportedMediaType",
+            "description": "",
+            "x-apidog-ordering": 5
+          },
+          "429": {
+            "$ref": "#/components/responses/TooManyRequests",
+            "description": "",
+            "x-apidog-ordering": 2
+          },
+          "500": {
+            "$ref": "#/components/responses/InternalServerError",
+            "description": "",
+            "x-apidog-ordering": 1
+          }
+        },
+        "security": [
+          {
+            "JWT Bearer": [],
+            "x-apidog": {
+              "schemeGroups": [
+                {
+                  "id": "p7aaBSVoHM5-oTP6xkoPz",
+                  "schemeIds": ["JWT Bearer"]
+                }
+              ],
+              "required": true,
+              "use": {
+                "id": "p7aaBSVoHM5-oTP6xkoPz",
+                "configs": {
+                  "JWT Bearer": {
+                    "authConfigs": {
+                      "x-apidog": {
+                        "token": "{{accessToken}}"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        ],
+        "x-apidog-folder": "Profile",
+        "x-apidog-status": "developing",
+        "x-run-in-apidog": "https://app.apidog.com/web/project/1308771/apis/api-38285892-run"
+      }
+    },
+    "/api/v1/profile/password": {
+      "patch": {
+        "summary": "Update Password",
+        "deprecated": false,
+        "description": "Changes the authenticated user's password (requires providing the current password for security verification)",
+        "tags": ["Profile"],
+        "parameters": [],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "currentPassword": {
+                    "type": "string",
+                    "description": "User's current password for verification",
+                    "x-apidog-mock": "{{$internet.password}}"
+                  },
+                  "newPassword": {
+                    "type": "string",
+                    "description": "User's new password (minimum 8 characters)",
+                    "minLength": 8,
+                    "x-apidog-mock": "{{$internet.password}}"
+                  }
+                },
+                "x-apidog-orders": ["01KVQ3T0GGMBGWEFX3612Z41JP"],
+                "required": ["currentPassword", "newPassword"],
+                "x-apidog-refs": {
+                  "01KVQ3T0GGMBGWEFX3612Z41JP": {
+                    "$ref": "#/components/schemas/ChangePasswordRequest"
+                  }
+                },
+                "x-apidog-ignore-properties": ["currentPassword", "newPassword"]
+              },
+              "examples": {}
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean",
+                      "const": true,
+                      "description": "Indicates if the password change was successful"
+                    },
+                    "message": {
+                      "type": "string",
+                      "x-apidog-mock": "Password updated successfully.",
+                      "description": "User feedback message"
+                    },
+                    "timestamp": {
+                      "type": "string",
+                      "format": "date-time",
+                      "x-apidog-mock": "{{$date.anytime}}"
+                    }
+                  },
+                  "x-apidog-orders": ["01KVQ3TFCG0EDWBMBQBSXFWYPA"],
+                  "required": ["success", "message"],
+                  "x-apidog-refs": {
+                    "01KVQ3TFCG0EDWBMBQBSXFWYPA": {
+                      "$ref": "#/components/schemas/ChangePasswordResponse"
+                    }
+                  },
+                  "x-apidog-ignore-properties": [
+                    "success",
+                    "message",
+                    "timestamp"
+                  ]
+                }
+              }
+            },
+            "x-apidog-name": "Success",
+            "x-apidog-ordering": 0
+          },
+          "400": {
+            "$ref": "#/components/responses/BadRequest",
+            "description": "",
+            "x-apidog-ordering": 3
+          },
+          "405": {
+            "$ref": "#/components/responses/MethodNotAllowed",
+            "description": "",
+            "x-apidog-ordering": 4
+          },
+          "415": {
+            "$ref": "#/components/responses/UnsupportedMediaType",
+            "description": "",
+            "x-apidog-ordering": 5
+          },
+          "429": {
+            "$ref": "#/components/responses/TooManyRequests",
+            "description": "",
+            "x-apidog-ordering": 2
+          },
+          "500": {
+            "$ref": "#/components/responses/InternalServerError",
+            "description": "",
+            "x-apidog-ordering": 1
+          }
+        },
+        "security": [
+          {
+            "JWT Bearer": [],
+            "x-apidog": {
+              "schemeGroups": [
+                {
+                  "id": "p7aaBSVoHM5-oTP6xkoPz",
+                  "schemeIds": ["JWT Bearer"]
+                }
+              ],
+              "required": true,
+              "use": {
+                "id": "p7aaBSVoHM5-oTP6xkoPz",
+                "configs": {
+                  "JWT Bearer": {
+                    "authConfigs": {
+                      "x-apidog": {
+                        "token": "{{accessToken}}"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        ],
+        "x-apidog-folder": "Profile",
+        "x-apidog-status": "developing",
+        "x-run-in-apidog": "https://app.apidog.com/web/project/1308771/apis/api-38306300-run"
+      }
+    },
+    "/api/v1/profile/notifications": {
+      "patch": {
+        "summary": "Update notification preferences",
+        "deprecated": false,
+        "description": "Updates the authenticated user's push notification and email alert preferences",
+        "tags": ["Profile"],
+        "parameters": [],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "pushEnabled": {
+                    "type": "boolean",
+                    "description": "Toggle to enable or disable all push notifications",
+                    "x-apidog-mock": "{{$datatype.boolean}}"
+                  },
+                  "wateringReminders": {
+                    "type": "boolean",
+                    "description": "Toggle to enable or disable watering reminders",
+                    "x-apidog-mock": "{{$datatype.boolean}}"
+                  },
+                  "fertilizingReminders": {
+                    "type": "boolean",
+                    "description": "Toggle to enable or disable fertilizing reminders",
+                    "x-apidog-mock": "{{$datatype.boolean}}"
+                  },
+                  "emailNotifications": {
+                    "type": "boolean",
+                    "description": "Toggle to enable or disable email newsletters or summaries",
+                    "x-apidog-mock": "{{$datatype.boolean}}"
+                  }
+                },
+                "x-apidog-orders": ["01KVQ613J16DBY1NS5F677HPM9"],
+                "x-apidog-refs": {
+                  "01KVQ613J16DBY1NS5F677HPM9": {
+                    "$ref": "#/components/schemas/UpdateNotificationPreferencesRequest"
+                  }
+                },
+                "x-apidog-ignore-properties": [
+                  "pushEnabled",
+                  "wateringReminders",
+                  "fertilizingReminders",
+                  "emailNotifications"
+                ]
+              },
+              "example": {
+                "pushEnabled": true,
+                "wateringReminders": false,
+                "fertilizingReminders": false,
+                "emailNotifications": true
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean",
+                      "const": true
+                    },
+                    "message": {
+                      "type": "string",
+                      "x-apidog-mock": "Preferences retrieved successfully."
+                    },
+                    "timestamp": {
+                      "type": "string",
+                      "format": "date-time",
+                      "x-apidog-mock": "{{$date.anytime}}"
+                    },
+                    "data": {
+                      "type": "object",
+                      "properties": {
+                        "preferences": {
+                          "$ref": "#/components/schemas/NotificationPreferences"
+                        }
+                      },
+                      "required": ["preferences"],
+                      "x-apidog-orders": ["preferences"],
+                      "x-apidog-ignore-properties": []
+                    }
+                  },
+                  "x-apidog-orders": ["01KVQ63WCHBCK7C7WCKTAZTQDX"],
+                  "required": ["success", "data"],
+                  "x-apidog-refs": {
+                    "01KVQ63WCHBCK7C7WCKTAZTQDX": {
+                      "$ref": "#/components/schemas/UpdateNotificationPreferencesResponse"
+                    }
+                  },
+                  "x-apidog-ignore-properties": [
+                    "success",
+                    "message",
+                    "timestamp",
+                    "data"
+                  ]
+                }
+              }
+            },
+            "x-apidog-name": "Success",
+            "x-apidog-ordering": 0
+          },
+          "400": {
+            "$ref": "#/components/responses/BadRequest",
+            "description": "",
+            "x-apidog-ordering": 3
+          },
+          "405": {
+            "$ref": "#/components/responses/MethodNotAllowed",
+            "description": "",
+            "x-apidog-ordering": 4
+          },
+          "415": {
+            "$ref": "#/components/responses/UnsupportedMediaType",
+            "description": "",
+            "x-apidog-ordering": 5
+          },
+          "429": {
+            "$ref": "#/components/responses/TooManyRequests",
+            "description": "",
+            "x-apidog-ordering": 2
+          },
+          "500": {
+            "$ref": "#/components/responses/InternalServerError",
+            "description": "",
+            "x-apidog-ordering": 1
+          }
+        },
+        "security": [
+          {
+            "JWT Bearer": [],
+            "x-apidog": {
+              "schemeGroups": [
+                {
+                  "id": "p7aaBSVoHM5-oTP6xkoPz",
+                  "schemeIds": ["JWT Bearer"]
+                }
+              ],
+              "required": true,
+              "use": {
+                "id": "p7aaBSVoHM5-oTP6xkoPz",
+                "configs": {
+                  "JWT Bearer": {
+                    "authConfigs": {
+                      "x-apidog": {
+                        "token": "{{accessToken}}"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        ],
+        "x-apidog-folder": "Profile",
+        "x-apidog-status": "developing",
+        "x-run-in-apidog": "https://app.apidog.com/web/project/1308771/apis/api-38310113-run"
+      },
+      "get": {
+        "summary": "Retrieve notification preferences",
+        "deprecated": false,
+        "description": "Retrieves the authenticated user's current push notification and email alert preferences",
+        "tags": ["Profile"],
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean",
+                      "const": true,
+                      "description": "Indicates if the request was successful"
+                    },
+                    "message": {
+                      "type": "string",
+                      "x-apidog-mock": "Preferences retrieved successfully.",
+                      "description": "Success feedback message"
+                    },
+                    "timestamp": {
+                      "type": "string",
+                      "format": "date-time",
+                      "x-apidog-mock": "{{$date.anytime}}"
+                    },
+                    "data": {
+                      "type": "object",
+                      "properties": {
+                        "preferences": {
+                          "$ref": "#/components/schemas/NotificationPreferences"
+                        }
+                      },
+                      "required": ["preferences"],
+                      "x-apidog-orders": ["preferences"],
+                      "x-apidog-ignore-properties": []
+                    }
+                  },
+                  "x-apidog-orders": ["01KVQ6E3GF512RAZVT7F6AEKEE"],
+                  "required": ["success", "data"],
+                  "x-apidog-refs": {
+                    "01KVQ6E3GF512RAZVT7F6AEKEE": {
+                      "$ref": "#/components/schemas/GetNotificationPreferencesResponse"
+                    }
+                  },
+                  "x-apidog-ignore-properties": [
+                    "success",
+                    "message",
+                    "timestamp",
+                    "data"
+                  ]
+                }
+              }
+            },
+            "headers": {},
+            "x-apidog-name": "Success",
+            "x-apidog-ordering": 0
+          },
+          "400": {
+            "$ref": "#/components/responses/BadRequest",
+            "description": "",
+            "x-apidog-ordering": 3
+          },
+          "405": {
+            "$ref": "#/components/responses/MethodNotAllowed",
+            "description": "",
+            "x-apidog-ordering": 4
+          },
+          "415": {
+            "$ref": "#/components/responses/UnsupportedMediaType",
+            "description": "",
+            "x-apidog-ordering": 5
+          },
+          "429": {
+            "$ref": "#/components/responses/TooManyRequests",
+            "description": "",
+            "x-apidog-ordering": 2
+          },
+          "500": {
+            "$ref": "#/components/responses/InternalServerError",
+            "description": "",
+            "x-apidog-ordering": 1
+          }
+        },
+        "security": [
+          {
+            "JWT Bearer": [],
+            "x-apidog": {
+              "schemeGroups": [
+                {
+                  "id": "p7aaBSVoHM5-oTP6xkoPz",
+                  "schemeIds": ["JWT Bearer"]
+                }
+              ],
+              "required": true,
+              "use": {
+                "id": "p7aaBSVoHM5-oTP6xkoPz",
+                "configs": {
+                  "JWT Bearer": {
+                    "authConfigs": {
+                      "x-apidog": {
+                        "token": "{{accessToken}}"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        ],
+        "x-apidog-folder": "Profile",
+        "x-apidog-status": "developing",
+        "x-run-in-apidog": "https://app.apidog.com/web/project/1308771/apis/api-38310382-run"
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "User": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "description": "Unique identifier of the user",
+            "x-apidog-mock": "{{$number.int(min=1, max=1000)}}"
+          },
+          "firstName": {
+            "type": "string",
+            "description": "User's first name",
+            "x-apidog-mock": "{{$person.firstName}}"
+          },
+          "lastName": {
+            "type": "string",
+            "description": "User's last name",
+            "x-apidog-mock": "{{$person.lastName}}"
+          },
+          "userName": {
+            "type": "string",
+            "description": "Unique username used for identification",
+            "x-apidog-mock": "{{$internet.userName}}"
+          },
+          "email": {
+            "type": "string",
+            "format": "email",
+            "description": "User's email address",
+            "x-apidog-mock": "{{$internet.email}}"
+          },
+          "password": {
+            "type": "string",
+            "writeOnly": true,
+            "minLength": 8,
+            "format": "password",
+            "description": "User's password",
+            "x-apidog-mock": "{{$internet.password}}"
+          },
+          "avatarUrl": {
+            "type": "string",
+            "format": "uri",
+            "description": "URL to the user's profile avatar",
+            "x-apidog-mock": "{{$image.avatar}}"
+          }
+        },
+        "required": [
+          "id",
+          "firstName",
+          "lastName",
+          "userName",
+          "email",
+          "avatarUrl"
+        ],
+        "x-apidog-orders": [
+          "id",
+          "firstName",
+          "lastName",
+          "userName",
+          "email",
+          "password",
+          "avatarUrl"
+        ],
+        "x-apidog-ignore-properties": [],
+        "x-apidog-folder": "Models"
+      },
+      "Plant": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "description": "Unique identifier of the plant species",
+            "x-apidog-mock": "{{$number.int}}"
+          },
+          "commonName": {
+            "type": "string",
+            "description": "Common name of the plant species",
+            "x-apidog-mock": "Monstera Deliciosa"
+          },
+          "scientificName": {
+            "type": "string",
+            "description": "Scientific/botanical name of the species",
+            "x-apidog-mock": "Monstera deliciosa"
+          },
+          "family": {
+            "type": "string",
+            "description": "Botanical family classification",
+            "x-apidog-mock": "Araceae"
+          },
+          "about": {
+            "type": "string",
+            "description": "A brief overview or history of the plant",
+            "x-apidog-mock": "Popular tropical climbing plant native to southern Mexico."
+          },
+          "temperature": {
+            "type": "string",
+            "description": "Optimal temperature range for growth",
+            "x-apidog-mock": "18°C - 30°C"
+          },
+          "light": {
+            "type": "string",
+            "description": "Light requirements for the plant",
+            "x-apidog-mock": "Bright indirect sunlight"
+          },
+          "water": {
+            "type": "string",
+            "description": "Watering instructions",
+            "x-apidog-mock": "Water thoroughly when the top 2-3 inches of soil is dry."
+          },
+          "whereToGrow": {
+            "type": "string",
+            "description": "Ideal location or container requirements",
+            "x-apidog-mock": "Indoor pots, greenhouse, or warm patio."
+          },
+          "toxicity": {
+            "type": "string",
+            "description": "Toxicity information regarding pets/humans",
+            "x-apidog-mock": "Toxic to cats and dogs due to calcium oxalate."
+          },
+          "howToGrow": {
+            "type": "string",
+            "description": "Care and planting instructions",
+            "x-apidog-mock": "Use well-draining soil mix and provide a moss pole for support."
+          },
+          "category": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "description": "Botanical and care categories",
+            "x-apidog-mock": ["Indoor", "Foliage", "Climbing"]
+          },
+          "kingdom": {
+            "type": "string",
+            "description": "Biological kingdom",
+            "x-apidog-mock": "Plantae"
+          },
+          "order": {
+            "type": "string",
+            "description": "Biological order",
+            "x-apidog-mock": "Alismatales"
+          },
+          "imageUrl": {
+            "type": "string",
+            "format": "uri",
+            "description": "URL to a high-resolution photo of the plant",
+            "x-apidog-mock": "https://cdn.plantera.com/plants/monstera.jpg"
+          },
+          "wateringFrequency": {
+            "type": "number",
+            "description": "Average number of days between waterings",
+            "x-apidog-mock": 7,
+            "nullable": true
+          },
+          "fertilizingFrequency": {
+            "type": "number",
+            "description": "Average number of days between fertilizing",
+            "x-apidog-mock": 30,
+            "nullable": true
+          }
+        },
+        "required": [
+          "id",
+          "commonName",
+          "scientificName",
+          "family",
+          "about",
+          "temperature",
+          "light",
+          "water",
+          "whereToGrow",
+          "toxicity",
+          "howToGrow",
+          "category",
+          "kingdom",
+          "order",
+          "imageUrl"
+        ],
+        "x-apidog-orders": [
+          "id",
+          "commonName",
+          "scientificName",
+          "family",
+          "about",
+          "temperature",
+          "light",
+          "water",
+          "whereToGrow",
+          "toxicity",
+          "howToGrow",
+          "category",
+          "kingdom",
+          "order",
+          "imageUrl",
+          "wateringFrequency",
+          "fertilizingFrequency"
+        ],
+        "x-apidog-ignore-properties": [],
+        "x-apidog-folder": "Models"
+      },
+      "Disease": {
+        "type": "object",
+        "properties": {
+          "image": {
+            "type": "string",
+            "format": "uri",
+            "description": "URL to the diagnostic scan image",
+            "x-apidog-mock": "https://cdn.plantera.com/diagnostics/mildew.jpg"
+          },
+          "name": {
+            "type": "string",
+            "description": "Primary name of the diagnosed disease",
+            "x-apidog-mock": "Powdery Mildew"
+          },
+          "otherNames": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "description": "Alternative names for the disease",
+            "x-apidog-mock": ["White mold", "Oidium"]
+          },
+          "type": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "description": "Categorization of the disease type",
+            "x-apidog-mock": ["Fungal infection"]
+          },
+          "causes": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "description": "Triggers or causes of the infection",
+            "x-apidog-mock": ["High humidity", "Poor air circulation"]
+          },
+          "symptoms": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "description": "Visual symptoms observed on the foliage",
+            "x-apidog-mock": ["White powdery spots on leaves", "Leaf curling"]
+          },
+          "treatment": {
+            "type": "object",
+            "description": "Categorized list of treatment recommendations",
+            "properties": {
+              "culturalControl": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                },
+                "x-apidog-mock": [
+                  "Prune infected leaves",
+                  "Avoid overhead watering"
+                ]
+              },
+              "chemicalControl": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                },
+                "x-apidog-mock": ["Apply sulfur-based fungicide"]
+              },
+              "organicBiologicalControl": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                },
+                "x-apidog-mock": ["Neem oil spray", "Baking soda solution"]
+              }
+            },
+            "required": [
+              "culturalControl",
+              "chemicalControl",
+              "organicBiologicalControl"
+            ],
+            "x-apidog-orders": [
+              "culturalControl",
+              "chemicalControl",
+              "organicBiologicalControl"
+            ],
+            "x-apidog-ignore-properties": []
+          },
+          "description": {
+            "type": "string",
+            "description": "Detailed summary of the disease behavior",
+            "x-apidog-mock": "A common fungal disease coating plant leaves in white mycelium."
+          }
+        },
+        "required": ["image", "name"],
+        "x-apidog-orders": [
+          "image",
+          "name",
+          "otherNames",
+          "type",
+          "causes",
+          "symptoms",
+          "treatment",
+          "description"
+        ],
+        "x-apidog-ignore-properties": [],
+        "x-apidog-folder": "Models"
+      },
+      "MyPlant": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "description": "Unique identifier of this garden plant entry",
+            "x-apidog-mock": "{{$number.int}}"
+          },
+          "plant": {
+            "$ref": "#/components/schemas/Plant"
+          },
+          "wateringFrequency": {
+            "type": "integer",
+            "description": "Custom watering frequency in days (overrides catalog default)",
+            "x-apidog-mock": 14,
+            "nullable": true
+          },
+          "fertilizingFrequency": {
+            "type": "integer",
+            "description": "Custom fertilizing frequency in days (overrides catalog default)",
+            "x-apidog-mock": 60,
+            "nullable": true
+          },
+          "nextWatering": {
+            "type": "string",
+            "format": "date-time",
+            "description": "Next calculated watering time",
+            "x-apidog-mock": "2026-06-25T08:00:00.000Z",
+            "nullable": true
+          },
+          "nextFertilizing": {
+            "type": "string",
+            "format": "date-time",
+            "description": "Next calculated fertilizing time",
+            "x-apidog-mock": "2026-08-19T08:00:00.000Z",
+            "nullable": true
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time",
+            "description": "Date when the user added this plant to their collection",
+            "x-apidog-mock": "2026-06-21T18:49:16.000Z"
+          }
+        },
+        "required": ["id", "plant", "createdAt"],
+        "x-apidog-orders": [
+          "id",
+          "plant",
+          "wateringFrequency",
+          "fertilizingFrequency",
+          "nextWatering",
+          "nextFertilizing",
+          "createdAt"
+        ],
+        "x-apidog-ignore-properties": [],
+        "x-apidog-folder": "Models"
+      },
+      "NotificationPreferences": {
+        "type": "object",
+        "properties": {
+          "pushEnabled": {
+            "type": "boolean",
+            "x-apidog-mock": "{{$datatype.boolean}}"
+          },
+          "wateringReminders": {
+            "type": "boolean",
+            "x-apidog-mock": "{{$datatype.boolean}}"
+          },
+          "fertilizingReminders": {
+            "type": "boolean",
+            "x-apidog-mock": "{{$datatype.boolean}}"
+          },
+          "emailNotifications": {
+            "type": "boolean",
+            "x-apidog-mock": "{{$datatype.boolean}}"
+          }
+        },
+        "required": [
+          "pushEnabled",
+          "wateringReminders",
+          "fertilizingReminders",
+          "emailNotifications"
+        ],
+        "x-apidog-orders": [
+          "pushEnabled",
+          "wateringReminders",
+          "fertilizingReminders",
+          "emailNotifications"
+        ],
+        "x-apidog-ignore-properties": [],
+        "x-apidog-folder": "Models"
+      },
+      "MyPlantsListResponse": {
+        "type": "object",
+        "properties": {
+          "success": {
+            "type": "boolean",
+            "const": true,
+            "description": "Indicates if the request was successful"
+          },
+          "message": {
+            "type": "string",
+            "default": "Successfully retrieved personal virtual garden.",
+            "description": "Response status message"
+          },
+          "timestamp": {
+            "type": "string",
+            "format": "date-time",
+            "description": "Response timestamp in ISO 8601 format"
+          },
+          "data": {
+            "type": "array",
+            "description": "List of plants in the user's garden",
+            "items": {
+              "$ref": "#/components/schemas/MyPlant"
+            }
+          },
+          "page": {
+            "type": "integer",
+            "description": "Current page number",
+            "x-apidog-mock": 1
+          },
+          "limit": {
+            "type": "integer",
+            "description": "Number of items per page",
+            "x-apidog-mock": 10
+          },
+          "totalCount": {
+            "type": "integer",
+            "description": "Total number of items in the database",
+            "x-apidog-mock": 50
+          },
+          "totalPages": {
+            "type": "integer",
+            "description": "Total number of pages",
+            "x-apidog-mock": 5
+          }
+        },
+        "required": [
+          "success",
+          "data",
+          "page",
+          "limit",
+          "totalCount",
+          "totalPages"
+        ],
+        "x-apidog-orders": [
+          "success",
+          "message",
+          "timestamp",
+          "data",
+          "01KVP1AT0G582CMARHHGADSXYD"
+        ],
+        "x-apidog-refs": {
+          "01KVP1AT0G582CMARHHGADSXYD": {
+            "$ref": "#/components/schemas/PaginationMeta"
+          }
+        },
+        "x-apidog-ignore-properties": [
+          "page",
+          "limit",
+          "totalCount",
+          "totalPages"
+        ],
+        "x-apidog-folder": "DTOs/My Plants"
+      },
+      "AddToMyPlantsRequest": {
+        "type": "object",
+        "properties": {
+          "plantId": {
+            "type": "integer",
+            "description": "The ID of the plant species from the global encyclopedia to add to the user's garden",
+            "x-apidog-mock": "{{$number.int}}"
+          }
+        },
+        "required": ["plantId"],
+        "x-apidog-orders": ["plantId"],
+        "x-apidog-ignore-properties": [],
+        "x-apidog-folder": "DTOs/My Plants"
+      },
+      "AddToMyPlantsResponse": {
+        "type": "object",
+        "properties": {
+          "success": {
+            "type": "boolean",
+            "const": true,
+            "description": "Indicates if the plant was successfully added"
+          },
+          "message": {
+            "type": "string",
+            "x-apidog-mock": "Plant added to your virtual garden successfully.",
+            "description": "Success feedback message"
+          },
+          "timestamp": {
+            "type": "string",
+            "format": "date-time",
+            "x-apidog-mock": "{{$date.anytime}}"
+          },
+          "data": {
+            "type": "object",
+            "properties": {
+              "myPlant": {
+                "$ref": "#/components/schemas/MyPlant"
+              }
+            },
+            "required": ["myPlant"],
+            "x-apidog-orders": ["myPlant"],
+            "x-apidog-ignore-properties": []
+          }
+        },
+        "required": ["success", "data"],
+        "x-apidog-orders": ["success", "message", "timestamp", "data"],
+        "x-apidog-ignore-properties": [],
+        "x-apidog-folder": "DTOs/My Plants"
+      },
+      "RemoveFromMyPlantsResponse": {
+        "type": "object",
+        "properties": {
+          "success": {
+            "type": "boolean",
+            "const": true,
+            "description": "Indicates if the plant was successfully removed"
+          },
+          "message": {
+            "type": "string",
+            "x-apidog-mock": "Plant removed from your virtual garden successfully.",
+            "description": "Success feedback message"
+          },
+          "timestamp": {
+            "type": "string",
+            "format": "date-time",
+            "x-apidog-mock": "{{$date.anytime}}"
+          }
+        },
+        "required": ["success", "message"],
+        "x-apidog-orders": ["success", "message", "timestamp"],
+        "x-apidog-ignore-properties": [],
+        "x-apidog-folder": "DTOs/My Plants"
+      },
+      "UpdateScheduleRequest": {
+        "type": "object",
+        "properties": {
+          "wateringFrequency": {
+            "type": "integer",
+            "description": "Custom watering frequency in days",
+            "x-apidog-mock": "{{$number.int}}"
+          },
+          "fertilizingFrequency": {
+            "type": "integer",
+            "description": "Custom fertilizing frequency in days",
+            "x-apidog-mock": "{{$number.int}}"
+          }
+        },
+        "required": ["wateringFrequency", "fertilizingFrequency"],
+        "x-apidog-orders": ["wateringFrequency", "fertilizingFrequency"],
+        "x-apidog-ignore-properties": [],
+        "x-apidog-folder": "DTOs/My Plants"
+      },
+      "UpdateScheduleResponse": {
+        "type": "object",
+        "properties": {
+          "success": {
+            "type": "boolean",
+            "const": true,
+            "description": "Indicates if the care schedule was updated successfully"
+          },
+          "message": {
+            "type": "string",
+            "x-apidog-mock": "Care schedule updated successfully.",
+            "description": "Success feedback message"
+          },
+          "timestamp": {
+            "type": "string",
+            "format": "date-time",
+            "x-apidog-mock": "{{$date.anytime}}"
+          },
+          "data": {
+            "type": "object",
+            "properties": {
+              "myPlant": {
+                "$ref": "#/components/schemas/MyPlant"
+              }
+            },
+            "required": ["myPlant"],
+            "x-apidog-orders": ["myPlant"],
+            "x-apidog-ignore-properties": []
+          }
+        },
+        "required": ["success", "data"],
+        "x-apidog-orders": ["success", "message", "timestamp", "data"],
+        "x-apidog-ignore-properties": [],
+        "x-apidog-folder": "DTOs/My Plants"
+      },
+      "RegisterRequest": {
+        "type": "object",
+        "properties": {
+          "firstName": {
+            "type": "string",
+            "description": "User's first name",
+            "x-apidog-mock": "{{$person.firstName}}"
+          },
+          "lastName": {
+            "type": "string",
+            "description": "User's last name",
+            "x-apidog-mock": "{{$person.lastName}}"
+          },
+          "userName": {
+            "type": "string",
+            "description": "Unique username chosen by the user",
+            "x-apidog-mock": "{{$internet.userName}}"
+          },
+          "email": {
+            "type": "string",
+            "format": "email",
+            "description": "Valid email address for registration",
+            "x-apidog-mock": "{{$internet.email}}"
+          },
+          "password": {
+            "type": "string",
+            "description": "Password string (minimum 8 characters)",
+            "minLength": 8,
+            "x-apidog-mock": "{{$internet.password}}"
+          }
+        },
+        "required": ["firstName", "lastName", "userName", "email", "password"],
+        "x-apidog-orders": [
+          "firstName",
+          "lastName",
+          "userName",
+          "email",
+          "password"
+        ],
+        "x-apidog-ignore-properties": [],
+        "x-apidog-folder": "DTOs/Auth/Register"
+      },
+      "RegisterResponse": {
+        "type": "object",
+        "properties": {
+          "accessToken": {
+            "type": "object",
+            "description": "JWT authentication token details",
+            "properties": {
+              "token": {
+                "type": "string",
+                "description": "Base64 encoded JWT access token",
+                "minLength": 100,
+                "maxLength": 120,
+                "x-apidog-mock": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwiZW1haWwiOiJlc3NhQHBsYW50ZXJhLmNvbSJ9.abc123xyz456_exampletoken"
+              },
+              "type": {
+                "type": "string",
+                "default": "Bearer",
+                "description": "The token type (always Bearer)",
+                "x-apidog-mock": "Bearer"
+              },
+              "expiresIn": {
+                "type": "integer",
+                "default": 3600,
+                "description": "Token expiration lifetime in seconds",
+                "x-apidog-mock": "{{$number.int(min=3600, max=3600)}}"
+              }
+            },
+            "required": ["token", "type", "expiresIn"],
+            "x-apidog-orders": ["token", "type", "expiresIn"],
+            "x-apidog-ignore-properties": []
+          },
+          "refreshToken": {
+            "type": "string",
+            "description": "Long-lived refresh token string used to request new access tokens",
+            "minLength": 100,
+            "maxLength": 120,
+            "x-apidog-mock": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwiZW1haWwiOiJlc3NhQHBsYW50ZXJhLmNvbSJ9.refresh_token_string_example"
+          }
+        },
+        "required": ["accessToken", "refreshToken"],
+        "x-apidog-orders": ["accessToken", "refreshToken"],
+        "x-apidog-ignore-properties": [],
+        "x-apidog-folder": "DTOs/Auth/Register"
+      },
+      "LoginRequest": {
+        "type": "object",
+        "x-apidog-refs": {
+          "01KVTXNX5HMD5NAWG99SYW99CQ": {
+            "$ref": "#/components/schemas/User",
+            "x-apidog-overrides": {
+              "id": null,
+              "firstName": null,
+              "lastName": null,
+              "userName": null,
+              "avatarUrl": null
+            }
+          }
+        },
+        "x-apidog-orders": ["01KVTXNX5HMD5NAWG99SYW99CQ"],
+        "properties": {
+          "email": {
+            "type": "string",
+            "format": "email",
+            "description": "User's email address",
+            "x-apidog-mock": "{{$internet.email}}"
+          },
+          "password": {
+            "type": "string",
+            "writeOnly": true,
+            "minLength": 8,
+            "format": "password",
+            "description": "User's password",
+            "x-apidog-mock": "{{$internet.password}}"
+          }
+        },
+        "required": ["email"],
+        "x-apidog-ignore-properties": ["email", "password"],
+        "x-apidog-folder": "DTOs/Auth/Login"
+      },
+      "LoginResponse": {
+        "type": "object",
+        "properties": {
+          "success": {
+            "type": "boolean",
+            "default": true,
+            "description": "Indicates if the request was successful"
+          },
+          "message": {
+            "type": "string",
+            "description": "Human-readable status or success message",
+            "x-apidog-mock": "User logged in successfully."
+          },
+          "timestamp": {
+            "type": "string",
+            "format": "date-time",
+            "description": "ISO 8601 timestamp of the response",
+            "x-apidog-mock": "{{$date.anytime}}"
+          },
+          "data": {
+            "description": "Payload containing the generated session access and refresh tokens",
+            "type": "object",
+            "x-apidog-refs": {
+              "01KVTM28VRDQFYNP7FVZJK3N7X": {
+                "$ref": "#/components/schemas/RegisterResponse",
+                "x-apidog-overrides": {}
+              }
+            },
+            "properties": {
+              "accessToken": {
+                "type": "object",
+                "description": "JWT authentication token details",
+                "properties": {
+                  "token": {
+                    "type": "string",
+                    "description": "Base64 encoded JWT access token",
+                    "minLength": 100,
+                    "maxLength": 120,
+                    "x-apidog-mock": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwiZW1haWwiOiJlc3NhQHBsYW50ZXJhLmNvbSJ9.abc123xyz456_exampletoken"
+                  },
+                  "type": {
+                    "type": "string",
+                    "default": "Bearer",
+                    "description": "The token type (always Bearer)",
+                    "x-apidog-mock": "Bearer"
+                  },
+                  "expiresIn": {
+                    "type": "integer",
+                    "default": 3600,
+                    "description": "Token expiration lifetime in seconds",
+                    "x-apidog-mock": "{{$number.int(min=3600, max=3600)}}"
+                  }
+                },
+                "required": ["token", "type", "expiresIn"],
+                "x-apidog-orders": ["token", "type", "expiresIn"],
+                "x-apidog-ignore-properties": []
+              },
+              "refreshToken": {
+                "type": "string",
+                "description": "Long-lived refresh token string used to request new access tokens",
+                "minLength": 100,
+                "maxLength": 120,
+                "x-apidog-mock": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwiZW1haWwiOiJlc3NhQHBsYW50ZXJhLmNvbSJ9.refresh_token_string_example"
+              },
+              "user": {
+                "type": "object",
+                "properties": {
+                  "id": {
+                    "type": "integer",
+                    "description": "Unique identifier of the user",
+                    "x-apidog-mock": "{{$number.int(min=1, max=1000)}}"
+                  },
+                  "firstName": {
+                    "type": "string",
+                    "description": "User's first name",
+                    "x-apidog-mock": "{{$person.firstName}}"
+                  },
+                  "lastName": {
+                    "type": "string",
+                    "description": "User's last name",
+                    "x-apidog-mock": "{{$person.lastName}}"
+                  },
+                  "userName": {
+                    "type": "string",
+                    "description": "Unique username used for identification",
+                    "x-apidog-mock": "{{$internet.userName}}"
+                  },
+                  "email": {
+                    "type": "string",
+                    "format": "email",
+                    "description": "User's email address",
+                    "x-apidog-mock": "{{$internet.email}}"
+                  },
+                  "password": {
+                    "type": "string",
+                    "writeOnly": true,
+                    "minLength": 8,
+                    "format": "password",
+                    "description": "User's password",
+                    "x-apidog-mock": "{{$internet.password}}"
+                  },
+                  "avatarUrl": {
+                    "type": "string",
+                    "format": "uri",
+                    "description": "URL to the user's profile avatar",
+                    "x-apidog-mock": "{{$image.avatar}}"
+                  }
+                },
+                "x-apidog-orders": ["01KVTWK2KBKCTQYVBJMJT0H0M8"],
+                "required": [
+                  "id",
+                  "firstName",
+                  "lastName",
+                  "userName",
+                  "email",
+                  "avatarUrl"
+                ],
+                "x-apidog-refs": {
+                  "01KVTWK2KBKCTQYVBJMJT0H0M8": {
+                    "$ref": "#/components/schemas/User"
+                  }
+                },
+                "x-apidog-ignore-properties": [
+                  "id",
+                  "firstName",
+                  "lastName",
+                  "userName",
+                  "email",
+                  "password",
+                  "avatarUrl"
+                ]
+              }
+            },
+            "x-apidog-orders": ["01KVTM28VRDQFYNP7FVZJK3N7X", "user"],
+            "required": ["user", "accessToken", "refreshToken"],
+            "x-apidog-ignore-properties": ["accessToken", "refreshToken"]
+          }
+        },
+        "required": ["success", "data"],
+        "x-apidog-orders": ["success", "message", "timestamp", "data"],
+        "x-apidog-ignore-properties": [],
+        "x-apidog-folder": "DTOs/Auth/Login"
+      },
+      "ForgotPasswordRequest": {
+        "type": "object",
+        "properties": {
+          "email": {
+            "type": "string",
+            "x-apidog-mock": "{{$internet.email}}"
+          }
+        },
+        "x-apidog-orders": ["email"],
+        "required": ["email"],
+        "x-apidog-ignore-properties": [],
+        "x-apidog-folder": "DTOs/Auth/Forgot password"
+      },
+      "ForgotPasswordResponse": {
+        "type": "object",
+        "properties": {
+          "success": {
+            "type": "boolean",
+            "const": true,
+            "description": "Indicates if the reset code was successfully sent"
+          },
+          "message": {
+            "type": "string",
+            "x-apidog-mock": "Password reset code sent to your email address.",
+            "description": "Feedback message for the user interface"
+          },
+          "timestamp": {
+            "type": "string",
+            "format": "date-time",
+            "x-apidog-mock": "{{$date.anytime}}",
+            "description": "ISO 8601 timestamp of the response"
+          }
+        },
+        "required": ["success", "message"],
+        "x-apidog-orders": ["success", "message", "timestamp"],
+        "x-apidog-ignore-properties": [],
+        "x-apidog-folder": "DTOs/Auth/Forgot password"
+      },
+      "VerifyOtpRequest": {
+        "type": "object",
+        "properties": {
+          "email": {
+            "type": "string",
+            "format": "email",
+            "description": "User's registered email address",
+            "x-apidog-mock": "{{$internet.email}}"
+          },
+          "otp": {
+            "type": "string",
+            "description": "The 6-digit one-time verification code received via email",
+            "minLength": 6,
+            "maxLength": 6,
+            "x-apidog-mock": "123456"
+          }
+        },
+        "required": ["email", "otp"],
+        "x-apidog-orders": ["email", "otp"],
+        "x-apidog-ignore-properties": [],
+        "x-apidog-folder": "DTOs/Auth/Verify otp"
+      },
+      "VerifyOtpResponse": {
+        "type": "object",
+        "properties": {
+          "success": {
+            "type": "boolean",
+            "const": true,
+            "description": "Indicates if the verification code is valid"
+          },
+          "message": {
+            "type": "string",
+            "const": "OTP code verified successfully.",
+            "description": "Success message for the user interface"
+          },
+          "timestamp": {
+            "type": "string",
+            "format": "date-time",
+            "x-apidog-mock": "{{$date.anytime}}"
+          },
+          "data": {
+            "type": "object",
+            "properties": {
+              "resetToken": {
+                "type": "string",
+                "description": "The temporary validation token received after successfully verifying the OTP.",
+                "x-apidog-mock": "{{$string.alphanumeric(length=32)}}"
+              }
+            },
+            "required": ["resetToken"],
+            "x-apidog-orders": ["resetToken"],
+            "x-apidog-ignore-properties": []
+          }
+        },
+        "required": ["success", "message", "data"],
+        "x-apidog-orders": ["success", "message", "timestamp", "data"],
+        "x-apidog-ignore-properties": [],
+        "x-apidog-folder": "DTOs/Auth/Verify otp"
+      },
+      "ResetPasswordResponse": {
+        "type": "object",
+        "properties": {
+          "success": {
+            "type": "boolean",
+            "const": true,
+            "description": "Indicates if the password was successfully reset"
+          },
+          "message": {
+            "type": "string",
+            "const": "Your password has been successfully reset. You can now log in.",
+            "description": "Success message for the user interface"
+          },
+          "timestamp": {
+            "type": "string",
+            "format": "date-time",
+            "x-apidog-mock": "{{$date.anytime}}"
+          }
+        },
+        "required": ["success", "message"],
+        "x-apidog-orders": ["success", "message", "timestamp"],
+        "x-apidog-ignore-properties": [],
+        "x-apidog-folder": "DTOs/Auth/Reset password"
+      },
+      "ResetPasswordRequest": {
+        "type": "object",
+        "properties": {
+          "email": {
+            "type": "string",
+            "format": "email",
+            "description": "User's registered email address",
+            "x-apidog-mock": "{{$internet.email}}"
+          },
+          "resetToken": {
+            "type": "string",
+            "description": "The temporary verification token received after verifying the OTP.",
+            "x-apidog-mock": "{{$string.alphanumeric(length=32)}}"
+          },
+          "password": {
+            "type": "string",
+            "description": "The new secure password (minimum 8 characters).",
+            "minLength": 8,
+            "x-apidog-mock": "{{$internet.password}}"
+          }
+        },
+        "required": ["email", "resetToken", "password"],
+        "x-apidog-orders": ["email", "resetToken", "password"],
+        "x-apidog-ignore-properties": [],
+        "x-apidog-folder": "DTOs/Auth/Reset password"
+      },
+      "AuthErrorCode": {
+        "type": "object",
+        "properties": {
+          "AUTH_TOKEN_EXPIRED": {
+            "type": "string",
+            "const": "AUTH_TOKEN_EXPIRED"
+          }
+        },
+        "x-apidog-orders": ["AUTH_TOKEN_EXPIRED"],
+        "required": ["AUTH_TOKEN_EXPIRED"],
+        "x-apidog-ignore-properties": [],
+        "x-apidog-folder": "DTOs/Auth"
+      },
+      "PlantListResponse": {
+        "type": "object",
+        "properties": {
+          "success": {
+            "type": "boolean",
+            "default": true,
+            "description": "Indicates if the request was successful"
+          },
+          "message": {
+            "type": "string",
+            "default": "Successfully listed botanical catalog.",
+            "description": "Response status message"
+          },
+          "timestamp": {
+            "type": "string",
+            "format": "date-time",
+            "description": "Response timestamp in ISO 8601 format"
+          },
+          "data": {
+            "type": "array",
+            "description": "List of plant species",
+            "items": {
+              "type": "object",
+              "x-apidog-refs": {
+                "01KVP0QQ6MDFWP47YNVGPNRJPS": {
+                  "$ref": "#/components/schemas/Plant",
+                  "x-apidog-overrides": {}
+                }
+              },
+              "properties": {
+                "id": {
+                  "type": "integer",
+                  "description": "Unique identifier of the plant species",
+                  "x-apidog-mock": "{{$number.int}}"
+                },
+                "commonName": {
+                  "type": "string",
+                  "description": "Common name of the plant species",
+                  "x-apidog-mock": "Monstera Deliciosa"
+                },
+                "scientificName": {
+                  "type": "string",
+                  "description": "Scientific/botanical name of the species",
+                  "x-apidog-mock": "Monstera deliciosa"
+                },
+                "family": {
+                  "type": "string",
+                  "description": "Botanical family classification",
+                  "x-apidog-mock": "Araceae"
+                },
+                "about": {
+                  "type": "string",
+                  "description": "A brief overview or history of the plant",
+                  "x-apidog-mock": "Popular tropical climbing plant native to southern Mexico."
+                },
+                "temperature": {
+                  "type": "string",
+                  "description": "Optimal temperature range for growth",
+                  "x-apidog-mock": "18°C - 30°C"
+                },
+                "light": {
+                  "type": "string",
+                  "description": "Light requirements for the plant",
+                  "x-apidog-mock": "Bright indirect sunlight"
+                },
+                "water": {
+                  "type": "string",
+                  "description": "Watering instructions",
+                  "x-apidog-mock": "Water thoroughly when the top 2-3 inches of soil is dry."
+                },
+                "whereToGrow": {
+                  "type": "string",
+                  "description": "Ideal location or container requirements",
+                  "x-apidog-mock": "Indoor pots, greenhouse, or warm patio."
+                },
+                "toxicity": {
+                  "type": "string",
+                  "description": "Toxicity information regarding pets/humans",
+                  "x-apidog-mock": "Toxic to cats and dogs due to calcium oxalate."
+                },
+                "howToGrow": {
+                  "type": "string",
+                  "description": "Care and planting instructions",
+                  "x-apidog-mock": "Use well-draining soil mix and provide a moss pole for support."
+                },
+                "category": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  },
+                  "description": "Botanical and care categories",
+                  "x-apidog-mock": ["Indoor", "Foliage", "Climbing"]
+                },
+                "kingdom": {
+                  "type": "string",
+                  "description": "Biological kingdom",
+                  "x-apidog-mock": "Plantae"
+                },
+                "order": {
+                  "type": "string",
+                  "description": "Biological order",
+                  "x-apidog-mock": "Alismatales"
+                },
+                "imageUrl": {
+                  "type": "string",
+                  "format": "uri",
+                  "description": "URL to a high-resolution photo of the plant",
+                  "x-apidog-mock": "https://cdn.plantera.com/plants/monstera.jpg"
+                },
+                "wateringFrequency": {
+                  "type": "number",
+                  "description": "Average number of days between waterings",
+                  "x-apidog-mock": 7,
+                  "nullable": true
+                },
+                "fertilizingFrequency": {
+                  "type": "number",
+                  "description": "Average number of days between fertilizing",
+                  "x-apidog-mock": 30,
+                  "nullable": true
+                }
+              },
+              "x-apidog-orders": ["01KVP0QQ6MDFWP47YNVGPNRJPS"],
+              "required": [
+                "id",
+                "commonName",
+                "scientificName",
+                "family",
+                "about",
+                "temperature",
+                "light",
+                "water",
+                "whereToGrow",
+                "toxicity",
+                "howToGrow",
+                "category",
+                "kingdom",
+                "order",
+                "imageUrl"
+              ],
+              "x-apidog-ignore-properties": [
+                "id",
+                "commonName",
+                "scientificName",
+                "family",
+                "about",
+                "temperature",
+                "light",
+                "water",
+                "whereToGrow",
+                "toxicity",
+                "howToGrow",
+                "category",
+                "kingdom",
+                "order",
+                "imageUrl",
+                "wateringFrequency",
+                "fertilizingFrequency"
+              ]
+            }
+          },
+          "meta": {
+            "type": "object",
+            "properties": {
+              "page": {
+                "type": "integer",
+                "description": "Current page number",
+                "x-apidog-mock": 1
+              },
+              "limit": {
+                "type": "integer",
+                "description": "Number of items per page",
+                "x-apidog-mock": 10
+              },
+              "totalCount": {
+                "type": "integer",
+                "description": "Total number of items in the database",
+                "x-apidog-mock": 50
+              },
+              "totalPages": {
+                "type": "integer",
+                "description": "Total number of pages",
+                "x-apidog-mock": 5
+              }
+            },
+            "x-apidog-orders": ["01KVP0R69KE1YZH4PATVY92A3F"],
+            "x-apidog-refs": {
+              "01KVP0R69KE1YZH4PATVY92A3F": {
+                "$ref": "#/components/schemas/PaginationMeta"
+              }
+            },
+            "required": ["page", "limit", "totalCount", "totalPages"],
+            "x-apidog-ignore-properties": [
+              "page",
+              "limit",
+              "totalCount",
+              "totalPages"
+            ]
+          }
+        },
+        "required": ["success", "data", "meta"],
+        "x-apidog-orders": ["success", "message", "timestamp", "data", "meta"],
+        "x-apidog-refs": {},
+        "x-apidog-ignore-properties": [],
+        "x-apidog-folder": "DTOs/Plant"
+      },
+      "PlantResponse": {
+        "type": "object",
+        "properties": {
+          "success": {
+            "type": "boolean",
+            "default": true,
+            "description": "Indicates if the request was successful"
+          },
+          "message": {
+            "type": "string",
+            "default": "Botanical entry operation success.",
+            "description": "Response status message"
+          },
+          "timestamp": {
+            "type": "string",
+            "format": "date-time",
+            "description": "Response timestamp in ISO 8601 format"
+          },
+          "data": {
+            "$ref": "#/components/schemas/Plant"
+          }
+        },
+        "required": ["success", "data"],
+        "x-apidog-orders": ["success", "message", "timestamp", "data"],
+        "x-apidog-ignore-properties": [],
+        "x-apidog-folder": "DTOs/Plant"
+      },
+      "PlantErrorCode": {
+        "type": "string",
+        "enum": ["PLANT_NOT_FOUND", "SPECIES_INVALID", "DISEASE_LOG_NOT_FOUND"],
+        "x-apidog-folder": "DTOs/Plant"
+      },
+      "UpdateProfileRequest": {
+        "type": "object",
+        "properties": {
+          "firstName": {
+            "type": "string",
+            "description": "User's updated first name",
+            "x-apidog-mock": "{{$person.firstName}}"
+          },
+          "lastName": {
+            "type": "string",
+            "description": "User's updated last name",
+            "x-apidog-mock": "{{$person.lastName}}"
+          },
+          "email": {
+            "type": "string",
+            "format": "email",
+            "description": "User's updated email address",
+            "x-apidog-mock": "{{$internet.email}}"
+          }
+        },
+        "x-apidog-orders": ["firstName", "lastName", "email"],
+        "x-apidog-ignore-properties": [],
+        "x-apidog-folder": "DTOs/Profile"
+      },
+      "UpdateProfileResponse": {
+        "type": "object",
+        "properties": {
+          "success": {
+            "type": "boolean",
+            "const": true,
+            "description": "Indicates if the profile was successfully updated"
+          },
+          "message": {
+            "type": "string",
+            "x-apidog-mock": "Profile details updated successfully.",
+            "description": "User feedback message"
+          },
+          "timestamp": {
+            "type": "string",
+            "format": "date-time",
+            "x-apidog-mock": "{{$date.anytime}}"
+          },
+          "data": {
+            "type": "object",
+            "properties": {
+              "user": {
+                "$ref": "#/components/schemas/User"
+              }
+            },
+            "required": ["user"],
+            "x-apidog-orders": ["user"],
+            "x-apidog-ignore-properties": []
+          }
+        },
+        "required": ["success", "data"],
+        "x-apidog-orders": ["success", "message", "timestamp", "data"],
+        "x-apidog-ignore-properties": [],
+        "x-apidog-folder": "DTOs/Profile"
+      },
+      "ChangePasswordRequest": {
+        "type": "object",
+        "properties": {
+          "currentPassword": {
+            "type": "string",
+            "description": "User's current password for verification",
+            "x-apidog-mock": "{{$internet.password}}"
+          },
+          "newPassword": {
+            "type": "string",
+            "description": "User's new password (minimum 8 characters)",
+            "minLength": 8,
+            "x-apidog-mock": "{{$internet.password}}"
+          }
+        },
+        "required": ["currentPassword", "newPassword"],
+        "x-apidog-orders": ["currentPassword", "newPassword"],
+        "x-apidog-ignore-properties": [],
+        "x-apidog-folder": "DTOs/Profile"
+      },
+      "ChangePasswordResponse": {
+        "type": "object",
+        "properties": {
+          "success": {
+            "type": "boolean",
+            "const": true,
+            "description": "Indicates if the password change was successful"
+          },
+          "message": {
+            "type": "string",
+            "x-apidog-mock": "Password updated successfully.",
+            "description": "User feedback message"
+          },
+          "timestamp": {
+            "type": "string",
+            "format": "date-time",
+            "x-apidog-mock": "{{$date.anytime}}"
+          }
+        },
+        "required": ["success", "message"],
+        "x-apidog-orders": ["success", "message", "timestamp"],
+        "x-apidog-ignore-properties": [],
+        "x-apidog-folder": "DTOs/Profile"
+      },
+      "UpdateNotificationPreferencesRequest": {
+        "type": "object",
+        "properties": {
+          "pushEnabled": {
+            "type": "boolean",
+            "description": "Toggle to enable or disable all push notifications",
+            "x-apidog-mock": "{{$datatype.boolean}}"
+          },
+          "wateringReminders": {
+            "type": "boolean",
+            "description": "Toggle to enable or disable watering reminders",
+            "x-apidog-mock": "{{$datatype.boolean}}"
+          },
+          "fertilizingReminders": {
+            "type": "boolean",
+            "description": "Toggle to enable or disable fertilizing reminders",
+            "x-apidog-mock": "{{$datatype.boolean}}"
+          },
+          "emailNotifications": {
+            "type": "boolean",
+            "description": "Toggle to enable or disable email newsletters or summaries",
+            "x-apidog-mock": "{{$datatype.boolean}}"
+          }
+        },
+        "x-apidog-orders": [
+          "pushEnabled",
+          "wateringReminders",
+          "fertilizingReminders",
+          "emailNotifications"
+        ],
+        "x-apidog-ignore-properties": [],
+        "x-apidog-folder": "DTOs/Profile"
+      },
+      "UpdateNotificationPreferencesResponse": {
+        "type": "object",
+        "properties": {
+          "success": {
+            "type": "boolean",
+            "const": true
+          },
+          "message": {
+            "type": "string",
+            "x-apidog-mock": "Preferences retrieved successfully."
+          },
+          "timestamp": {
+            "type": "string",
+            "format": "date-time",
+            "x-apidog-mock": "{{$date.anytime}}"
+          },
+          "data": {
+            "type": "object",
+            "properties": {
+              "preferences": {
+                "$ref": "#/components/schemas/NotificationPreferences"
+              }
+            },
+            "required": ["preferences"],
+            "x-apidog-orders": ["preferences"],
+            "x-apidog-ignore-properties": []
+          }
+        },
+        "required": ["success", "data"],
+        "x-apidog-orders": ["success", "message", "timestamp", "data"],
+        "x-apidog-ignore-properties": [],
+        "x-apidog-folder": "DTOs/Profile"
+      },
+      "GetNotificationPreferencesResponse": {
+        "type": "object",
+        "properties": {
+          "success": {
+            "type": "boolean",
+            "const": true,
+            "description": "Indicates if the request was successful"
+          },
+          "message": {
+            "type": "string",
+            "x-apidog-mock": "Preferences retrieved successfully.",
+            "description": "Success feedback message"
+          },
+          "timestamp": {
+            "type": "string",
+            "format": "date-time",
+            "x-apidog-mock": "{{$date.anytime}}"
+          },
+          "data": {
+            "type": "object",
+            "properties": {
+              "preferences": {
+                "$ref": "#/components/schemas/NotificationPreferences"
+              }
+            },
+            "required": ["preferences"],
+            "x-apidog-orders": ["preferences"],
+            "x-apidog-ignore-properties": []
+          }
+        },
+        "required": ["success", "data"],
+        "x-apidog-orders": ["success", "message", "timestamp", "data"],
+        "x-apidog-ignore-properties": [],
+        "x-apidog-folder": "DTOs/Profile"
+      },
+      "DiseaseResponse": {
+        "type": "object",
+        "properties": {
+          "success": {
+            "type": "boolean",
+            "const": true,
+            "description": "Indicates if the request was successful",
+            "x-apidog-mock": "true"
+          },
+          "message": {
+            "type": "string",
+            "const": "AI botanical diagnosis scan complete.",
+            "description": "Response status message",
+            "x-apidog-mock": "AI botanical diagnosis scan complete"
+          },
+          "timestamp": {
+            "type": "string",
+            "format": "date-time",
+            "description": "Response timestamp in ISO 8601 format"
+          },
+          "data": {
+            "$ref": "#/components/schemas/Disease"
+          }
+        },
+        "required": ["success", "data"],
+        "x-apidog-orders": ["success", "message", "timestamp", "data"],
+        "x-apidog-ignore-properties": [],
+        "x-apidog-folder": "DTOs/Diagnostic"
+      },
+      "PaginationMeta": {
+        "type": "object",
+        "properties": {
+          "page": {
+            "type": "integer",
+            "description": "Current page number",
+            "x-apidog-mock": 1
+          },
+          "limit": {
+            "type": "integer",
+            "description": "Number of items per page",
+            "x-apidog-mock": 10
+          },
+          "totalCount": {
+            "type": "integer",
+            "description": "Total number of items in the database",
+            "x-apidog-mock": 50
+          },
+          "totalPages": {
+            "type": "integer",
+            "description": "Total number of pages",
+            "x-apidog-mock": 5
+          }
+        },
+        "required": ["page", "limit", "totalCount", "totalPages"],
+        "x-apidog-orders": ["page", "limit", "totalCount", "totalPages"],
+        "x-apidog-ignore-properties": [],
+        "x-apidog-folder": "DTOs/Common"
+      },
+      "GlobalErrorCode": {
+        "type": "string",
+        "enum": [
+          "INTERNAL_SERVER_ERROR",
+          "BAD_REQUEST",
+          "UNAUTHORIZED",
+          "FORBIDDEN",
+          "RESOURCE_NOT_FOUND",
+          "VALIDATION_FAILED",
+          "CONFLICT",
+          "RATE_LIMIT_EXCEEDED",
+          "METHOD_NOT_ALLOWED",
+          "UNSUPPORTED_MEDIA_TYPE"
+        ],
+        "x-apidog-folder": "Envelopes/Errors"
+      },
+      "ErrorResponse": {
+        "type": "object",
+        "title": "",
+        "required": ["success", "errorCode", "message", "error"],
+        "properties": {
+          "success": {
+            "type": "boolean",
+            "const": false,
+            "description": "Always false for error responses",
+            "example": false
+          },
+          "errorCode": {
+            "oneOf": [
+              {
+                "description": "One of the standard global error codes.",
+                "$ref": "#/components/schemas/GlobalErrorCode"
+              }
+            ]
+          },
+          "message": {
+            "type": "string",
+            "description": "Default human-readable error description.",
+            "x-apidog-mock": "An error occurred while processing the request."
+          },
+          "error": {
+            "type": "string",
+            "description": "HTTP standard status error phrase.",
+            "x-apidog-mock": "Bad Request"
+          },
+          "details": {
+            "type": "object",
+            "description": "Structured field-specific error details mapped by field name, optimized for localization.",
+            "additionalProperties": {
+              "type": "object",
+              "required": ["code", "message"],
+              "properties": {
+                "code": {
+                  "type": "string",
+                  "description": "Machine-readable localization key (e.g., REQUIRED, TOO_SHORT, INVALID_FORMAT).",
+                  "x-apidog-mock": "TOO_SHORT"
+                },
+                "message": {
+                  "type": "string",
+                  "description": "Default human-readable fallback message.",
+                  "x-apidog-mock": "Must be at least 8 characters."
+                },
+                "params": {
+                  "type": "object",
+                  "description": "Optional interpolation parameters for localization strings.",
+                  "properties": {
+                    "min": {
+                      "type": "number",
+                      "description": "Minimum value or length constraint."
+                    },
+                    "max": {
+                      "type": "number",
+                      "description": "Maximum value or length constraint."
+                    },
+                    "length": {
+                      "type": "integer",
+                      "description": "Exact length constraint."
+                    },
+                    "allowedValues": {
+                      "type": "array",
+                      "description": "List of allowed values for enum validation.",
+                      "items": {
+                        "type": "string"
+                      }
+                    }
+                  },
+                  "additionalProperties": true,
+                  "x-apidog-mock": {
+                    "min": 8
+                  },
+                  "x-apidog-orders": ["min", "max", "length", "allowedValues"]
+                }
+              },
+              "additionalProperties": false,
+              "x-apidog-orders": ["code", "message", "params"]
+            },
+            "x-apidog-orders": [],
+            "properties": {},
+            "x-apidog-ignore-properties": []
+          }
+        },
+        "x-apidog-orders": [
+          "success",
+          "errorCode",
+          "message",
+          "error",
+          "details"
+        ],
+        "x-apidog-ignore-properties": [],
+        "x-apidog-folder": "Envelopes/Errors"
+      },
+      "Success": {
+        "type": "object",
+        "required": ["success", "data"],
+        "properties": {
+          "success": {
+            "type": "boolean",
+            "const": true,
+            "description": "Indicates if the request was successful"
+          },
+          "message": {
+            "type": "string",
+            "description": "Human-readable status or success message",
+            "x-apidog-mock": "Operation completed successfully."
+          },
+          "timestamp": {
+            "type": "string",
+            "format": "date-time",
+            "description": "ISO 8601 timestamp of the response",
+            "x-apidog-mock": "{{$date.anytime}}"
+          },
+          "data": {
+            "type": "object",
+            "description": "The payload data of the response",
+            "properties": {},
+            "additionalProperties": true,
+            "x-apidog-orders": [],
+            "x-apidog-ignore-properties": []
+          }
+        },
+        "x-apidog-orders": ["success", "message", "timestamp", "data"],
+        "x-apidog-ignore-properties": [],
+        "x-apidog-folder": "Envelopes"
+      }
+    },
+    "responses": {
+      "InternalServerError": {
+        "description": "",
+        "content": {
+          "application/json": {
+            "schema": {
+              "title": "",
+              "type": "object",
+              "properties": {},
+              "x-apidog-orders": ["01KVTJYHF1YBKK2Q0JPV729WQX"],
+              "required": [],
+              "x-apidog-refs": {
+                "01KVTJYHF1YBKK2Q0JPV729WQX": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "examples": {
+              "Example": {
+                "summary": "Example",
+                "value": {
+                  "success": false,
+                  "errorCode": "INTERNAL_SERVER_ERROR",
+                  "message": "An error occurred while processing the request.",
+                  "error": "Bad Request"
+                }
+              }
+            }
+          }
+        }
+      },
+      "TooManyRequests": {
+        "description": "",
+        "content": {
+          "application/json": {
+            "schema": {
+              "title": "",
+              "type": "object",
+              "properties": {},
+              "x-apidog-orders": ["01KVTK1B2MVF4YYSNY0F9S5Q80"],
+              "required": [],
+              "x-apidog-refs": {
+                "01KVTK1B2MVF4YYSNY0F9S5Q80": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "examples": {
+              "Example": {
+                "summary": "Example",
+                "value": {
+                  "success": false,
+                  "errorCode": "RATE_LIMIT_EXCEEDED",
+                  "message": "Too many registration attempts. Please try again in 15 minutes.",
+                  "error": "Too Many Requests"
+                }
+              }
+            }
+          }
+        }
+      },
+      "BadRequest": {
+        "description": "",
+        "content": {
+          "application/json": {
+            "schema": {
+              "title": "",
+              "type": "object",
+              "properties": {},
+              "x-apidog-orders": ["01KVTK5Y8RCKY0V3DRZ8H1Z34V"],
+              "required": [],
+              "x-apidog-refs": {
+                "01KVTK5Y8RCKY0V3DRZ8H1Z34V": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "examples": {
+              "Example": {
+                "summary": "Example",
+                "value": {
+                  "success": false,
+                  "errorCode": "BAD_REQUEST",
+                  "message": "Malformed JSON payload or invalid request syntax.",
+                  "error": "Bad Request"
+                }
+              }
+            }
+          }
+        }
+      },
+      "MethodNotAllowed": {
+        "description": "",
+        "content": {
+          "application/json": {
+            "schema": {
+              "title": "",
+              "type": "object",
+              "properties": {},
+              "x-apidog-orders": ["01KVTKAX73BYS2NNCYHG4YHFH8"],
+              "required": [],
+              "x-apidog-refs": {
+                "01KVTKAX73BYS2NNCYHG4YHFH8": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "examples": {
+              "Example": {
+                "summary": "Example",
+                "value": {
+                  "success": false,
+                  "errorCode": "METHOD_NOT_ALLOWED",
+                  "message": "The HTTP POST method is not allowed for this endpoint. Supported methods: GET, HEAD.",
+                  "error": "Method Not Allowed"
+                }
+              }
+            }
+          }
+        }
+      },
+      "UnsupportedMediaType": {
+        "description": "",
+        "content": {
+          "application/json": {
+            "schema": {
+              "title": "",
+              "type": "object",
+              "properties": {},
+              "x-apidog-orders": ["01KVTKEXGYG304Y709CM5RSPNB"],
+              "required": [],
+              "x-apidog-refs": {
+                "01KVTKEXGYG304Y709CM5RSPNB": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "examples": {
+              "Example": {
+                "summary": "Example",
+                "value": {
+                  "success": false,
+                  "errorCode": "UNSUPPORTED_MEDIA_TYPE",
+                  "message": "Unsupported Content-Type header. Please send requests as application/json.",
+                  "error": "Unsupported Media Type"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "securitySchemes": {
+      "JWT Bearer": {
+        "type": "http",
+        "scheme": "bearer"
+      }
+    }
+  },
+  "servers": [],
+  "security": [
+    {
+      "JWT Bearer": [],
+      "x-apidog": {
+        "schemeGroups": [
+          {
+            "id": "p7aaBSVoHM5-oTP6xkoPz",
+            "schemeIds": ["JWT Bearer"]
+          }
+        ],
+        "required": true,
+        "use": {
+          "id": "p7aaBSVoHM5-oTP6xkoPz",
+          "configs": {
+            "JWT Bearer": {
+              "authConfigs": {
+                "x-apidog": {
+                  "token": "{{accessToken}}"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  ]
+}

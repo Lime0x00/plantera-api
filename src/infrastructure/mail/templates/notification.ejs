@@ -1,0 +1,69 @@
+<%- include('layout', { content: `
+  <table role="presentation" style="width: 100%;" cellpadding="0" cellspacing="0">
+    <tr>
+      <td style="padding-bottom: 8px;">
+        <span style="display: inline-block; padding: 4px 14px; border-radius: 9999px; font-size: 13px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; background: ${
+          type === 'watering_reminder' ? '#dbeafe' : type === 'fertilizing_reminder' ? '#fef3c7' : '#f3f4f6'
+        }; color: ${
+          type === 'watering_reminder' ? '#1d4ed8' : type === 'fertilizing_reminder' ? '#b45309' : '#374151'
+        };">
+          ${type === 'watering_reminder' ? '💧 Watering Reminder' : type === 'fertilizing_reminder' ? '🌿 Fertilizing Reminder' : 'Notification'}
+        </span>
+      </td>
+    </tr>
+    <tr>
+      <td style="padding-bottom: 8px;">
+        <h2 style="margin: 0; color: #111827; font-size: 22px; font-weight: 700; line-height: 1.3;">${title}</h2>
+      </td>
+    </tr>
+    <tr>
+      <td style="padding-bottom: 6px;">
+        <p style="margin: 0; color: #4b5563; font-size: 16px; line-height: 1.6;">${body}</p>
+      </td>
+    </tr>
+    ${
+      plantId ? `
+    <tr>
+      <td style="padding: 16px 0;">
+        <table role="presentation" style="width: 100%; background: #f9fafb; border-radius: 12px; border: 1px solid #e5e7eb;" cellpadding="0" cellspacing="0">
+          <tr>
+            <td style="padding: 16px 20px;">
+              <table role="presentation" cellpadding="0" cellspacing="0">
+                <tr>
+                  <td style="width: 40px; height: 40px; background: #059669; border-radius: 10px; text-align: center; vertical-align: middle; font-size: 20px; line-height: 40px; color: #fff;">
+                    ${type === 'watering_reminder' ? '💧' : '🌿'}
+                  </td>
+                  <td style="padding-left: 14px; vertical-align: middle;">
+                    <p style="margin: 0; font-size: 15px; font-weight: 600; color: #111827;">${title}</p>
+                    <p style="margin: 2px 0 0; font-size: 13px; color: #6b7280;">${type === 'watering_reminder' ? 'Watering' : 'Fertilizing'} reminder for your plant</p>
+                  </td>
+                </tr>
+              </table>
+            </td>
+          </tr>
+        </table>
+      </td>
+    </tr>
+    ` : ''
+    }
+    <tr>
+      <td style="padding-top: 8px;">
+        <table role="presentation" style="margin: 0;" cellpadding="0" cellspacing="0">
+          <tr>
+            <td style="background: #059669; border-radius: 9999px; text-align: center;">
+              <a href="${frontendUrl}/my-plants/care" style="display: inline-block; padding: 14px 36px; color: #ffffff; text-decoration: none; font-weight: 600; font-size: 15px; border-radius: 9999px;">View Care Schedule</a>
+            </td>
+          </tr>
+        </table>
+      </td>
+    </tr>
+    <tr>
+      <td style="padding-top: 16px;">
+        <p style="margin: 0; color: #9ca3af; font-size: 13px; line-height: 1.5;">
+          You can manage your notification preferences in your 
+          <a href="${frontendUrl}/profile/notifications" style="color: #059669; text-decoration: underline;">profile settings</a>.
+        </p>
+      </td>
+    </tr>
+  </table>
+` }) %>
