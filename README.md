@@ -22,6 +22,19 @@ This is the primary REST API backend for the Plantera ecosystem. It serves reque
 - **PostgreSQL** 15+ (running on `localhost:5432`)
 - **Redis** 7+ (running on `localhost:6379`)
 - **RabbitMQ** (optional, for queue workers)
+- **Plant Analyzer** (optional, for ML disease detection) — see [plant-analyzer](https://github.com/Lime0x00/plant-analyzer)
+
+## Communication with Plant Analyzer
+
+This backend calls the [plant-analyzer](https://github.com/Lime0x00/plant-analyzer) ML service for disease detection.
+Set `ANALYZER_URL` in your `.env`:
+
+| Setup | `ANALYZER_URL` |
+|-------|----------------|
+| Both running locally | `http://localhost:5000/v1` |
+| Both in Docker (parent compose) | `http://plant-analyzer:5000/v1` |
+
+Default: `http://localhost:5000/v1`
 
 ## Docker (Standalone)
 
