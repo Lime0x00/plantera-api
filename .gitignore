@@ -1,6 +1,10 @@
 node_modules/
 dist/
 .env
+.env.dev
+.env.docker
+.env.test
 *.log
 .DS_Store
 public/uploads/
+src/common/types/generated/prisma/
