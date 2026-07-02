@@ -1,0 +1,28 @@
+import type {
+  FindUniqueArgs,
+  FindManyArgs,
+  CreateArgs,
+  UpdateArgs,
+  DeleteArgs,
+} from '#common/types/database';
+import type { {{pascalCase name}} } from './domain';
+
+export interface {{pascalCase name}}WhereUniqueInput {
+  id?: number;
+}
+
+export interface {{pascalCase name}}CreateInput {
+  // Define creation fields
+}
+
+export interface {{pascalCase name}}UpdateInput {
+  // Define update fields
+}
+
+export interface I{{pascalCase name}}Repository {
+  create(args: CreateArgs<{{pascalCase name}}CreateInput>): Promise<{{pascalCase name}}>;
+  findUnique(args: FindUniqueArgs<{{pascalCase name}}WhereUniqueInput>): Promise<{{pascalCase name}} | null>;
+  findMany(args?: FindManyArgs<{{pascalCase name}}WhereUniqueInput>): Promise<{{pascalCase name}}[]>;
+  update(args: UpdateArgs<{{pascalCase name}}WhereUniqueInput, {{pascalCase name}}UpdateInput>): Promise<{{pascalCase name}}>;
+  delete(args: DeleteArgs<{{pascalCase name}}WhereUniqueInput>): Promise<{{pascalCase name}}>;
+}

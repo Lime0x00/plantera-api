@@ -1,0 +1,13 @@
+import { API_MESSAGES } from '#common/types/generated';
+
+export enum {{constantCase name}}_ERRORS {
+  DATA_REQUIRED = '{{pascalCase name}} data is required.',
+  UPDATE_REQUIRED = 'At least one field is required to update.',
+}
+
+// NOTE: Use API_MESSAGES['operationId']['statusCode'] for response messages
+// defined in the OpenAPI specification to maintain a single source of truth.
+// Custom business-logic errors can be added below:
+export enum {{constantCase name}}_MESSAGES {
+  createForbidden = 'You are not allowed to create {{camelCase name}}.',
+}

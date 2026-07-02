@@ -1,0 +1,68 @@
+import type { NextFunction, Response, Request } from 'express';
+
+import { Controller } from '#framework/presentation/controller';
+import { parsePagination, parseIdParam } from '#common/helpers';
+
+import { {{pascalCase name}}Service } from './{{dashCase name}}.service';
+import { {{pascalCase name}}Resource } from './resources';
+
+interface {{pascalCase name}}ControllerDeps {
+  services: { {{camelCase name}}Service: {{pascalCase name}}Service };
+}
+
+export class {{pascalCase name}}Controller extends Controller {
+  #service: {{pascalCase name}}Service;
+  #resource = new {{pascalCase name}}Resource();
+
+  constructor({ services: { {{camelCase name}}Service } }: {{pascalCase name}}ControllerDeps) {
+    super();
+    this.#service = {{camelCase name}}Service;
+  }
+
+  public async create(req: Request, res: Response, next: NextFunction) {
+    return this.run(next, async () => {
+      const result = await this.#service.create(req.body);
+      return this.created(res, { data: this.#resource.make(result) });
+    });
+  }
+
+  public async findAll(req: Request, res: Response, next: NextFunction) {
+    return this.run(next, async () => {
+      const { page, limit } = parsePagination(req);
+      const result = await this.#service.findAll(page, limit);
+      return this.ok(res, {
+        data: this.#resource.collection(result.data),
+        meta: {
+          page,
+          limit,
+          totalCount: result.totalCount,
+          totalPages: Math.ceil(result.totalCount / limit),
+        },
+      });
+    });
+  }
+
+  public async findById(req: Request, res: Response, next: NextFunction) {
+    return this.run(next, async () => {
+      const id = parseIdParam(req.params.id);
+      const result = await this.#service.findById(id);
+      return this.ok(res, { data: this.#resource.make(result) });
+    });
+  }
+
+  public async update(req: Request, res: Response, next: NextFunction) {
+    return this.run(next, async () => {
+      const id = parseIdParam(req.params.id);
+      const result = await this.#service.update(id, req.body);
+      return this.ok(res, { data: this.#resource.make(result) });
+    });
+  }
+
+  public async delete(req: Request, res: Response, next: NextFunction) {
+    return this.run(next, async () => {
+      const id = parseIdParam(req.params.id);
+      await this.#service.delete(id);
+      return this.ok(res, {});
+    });
+  }
+}

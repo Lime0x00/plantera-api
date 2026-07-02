@@ -1,0 +1,13 @@
+import { Router } from 'express';
+import { container } from '#app/container';
+import type { {{pascalCase name}}Controller } from './{{dashCase name}}.controller';
+
+const {{camelCase name}}Router = Router();
+
+{{camelCase name}}Router.post('/', (req, res, next) => container.resolve<{{pascalCase name}}Controller>('{{camelCase name}}Controller').create(req, res, next));
+{{camelCase name}}Router.get('/', (req, res, next) => container.resolve<{{pascalCase name}}Controller>('{{camelCase name}}Controller').findAll(req, res, next));
+{{camelCase name}}Router.get('/:id', (req, res, next) => container.resolve<{{pascalCase name}}Controller>('{{camelCase name}}Controller').findById(req, res, next));
+{{camelCase name}}Router.patch('/:id', (req, res, next) => container.resolve<{{pascalCase name}}Controller>('{{camelCase name}}Controller').update(req, res, next));
+{{camelCase name}}Router.delete('/:id', (req, res, next) => container.resolve<{{pascalCase name}}Controller>('{{camelCase name}}Controller').delete(req, res, next));
+
+export { {{camelCase name}}Router };

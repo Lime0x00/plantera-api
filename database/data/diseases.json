@@ -1,0 +1,115 @@
+[
+  {
+    "name": "Leaf Spot",
+    "otherNames": [
+      "Leaf Spot Disease",
+      "Fungal Leaf Spots",
+      "Bacterial Leaf Spot"
+    ],
+    "type": "Fungal / Bacterial disease",
+    "causes": "Fungal or bacterial infections caused by high humidity, poor air circulation, and wet foliage.",
+    "symptoms": "Small brown or black spots on leaves, yellowing, and damaged foliage.",
+    "treatment": {
+      "steps": [
+        "Remove infected leaves",
+        "Improve air circulation",
+        "Avoid wetting leaves",
+        "Apply suitable fungicide if needed"
+      ]
+    },
+    "description": "A common plant disease that causes spots and damage on leaves.",
+    "imageUrl": ""
+  },
+  {
+    "name": "Calcium Deficiency",
+    "otherNames": [
+      "Calcium Deficiency Disorder",
+      "Blossom End Rot (in fruits)",
+      "Calcium Stress"
+    ],
+    "type": "Nutrient deficiency",
+    "causes": "Low calcium availability in soil or poor nutrient absorption.",
+    "symptoms": "Distorted young leaves, weak growth, and damaged leaf edges.",
+    "treatment": {
+      "steps": [
+        "Add calcium supplements",
+        "Improve soil condition",
+        "Maintain balanced nutrients"
+      ]
+    },
+    "description": "A nutrient problem that affects plant growth and cell development.",
+    "imageUrl": ""
+  },
+  {
+    "name": "Scorched Leaves",
+    "otherNames": ["Leaf Burn", "Sun Scorch", "Heat Stress"],
+    "type": "Environmental stress",
+    "causes": "Excessive sunlight, high temperatures, dry air, or insufficient water.",
+    "symptoms": "Brown crispy edges, burned appearance, and dried leaves.",
+    "treatment": {
+      "steps": [
+        "Reduce direct sunlight",
+        "Increase humidity",
+        "Provide proper watering"
+      ]
+    },
+    "description": "Plant damage caused by heat, sunlight, or water stress.",
+    "imageUrl": ""
+  },
+  {
+    "name": "Leaf Blight",
+    "otherNames": ["Blight Disease", "Foliage Blight", "Plant Blight"],
+    "type": "Fungal disease",
+    "causes": "Fungal pathogens spreading in humid conditions.",
+    "symptoms": "Large brown patches, wilting leaves, and rapid plant damage.",
+    "treatment": {
+      "steps": [
+        "Remove infected parts",
+        "Improve ventilation",
+        "Use fungicide treatment"
+      ]
+    },
+    "description": "A serious plant disease that damages leaves and reduces plant health.",
+    "imageUrl": ""
+  },
+  {
+    "name": "Yellow Vein Mosaic",
+    "otherNames": [
+      "Yellow Vein Mosaic Virus",
+      "Vein Yellowing Disease",
+      "Mosaic Virus"
+    ],
+    "type": "Viral disease",
+    "causes": "Virus infection commonly spread by insects such as whiteflies.",
+    "symptoms": "Yellow patterns around leaf veins, weak growth, and leaf deformation.",
+    "treatment": {
+      "steps": [
+        "Control insect vectors",
+        "Remove infected plants",
+        "Use healthy planting materials"
+      ]
+    },
+    "description": "A viral disease that causes yellow patterns and abnormal leaf growth.",
+    "imageUrl": ""
+  },
+  {
+    "name": "Curly Yellow Virus",
+    "otherNames": [
+      "Yellow Leaf Curl Virus",
+      "Leaf Curl Disease",
+      "Tomato Yellow Leaf Curl Virus"
+    ],
+    "type": "Viral disease",
+    "causes": "Virus transmission by insects, especially whiteflies.",
+    "symptoms": "Curled yellow leaves, stunted growth, and reduced production.",
+    "treatment": {
+      "steps": [
+        "Control whiteflies",
+        "Remove infected leaves",
+        "Prevent spread between plants"
+      ]
+    },
+    "description": "A viral infection causing yellowing and curling of plant leaves.",
+    "imageUrl": ""
+  }
+]

@@ -1,0 +1,10 @@
+import type { components } from '#common/types/generated/openapi.types';
+import { Resource } from '#common/types/http/resources';
+
+type Spec = components['schemas']['{{pascalCase name}}'];
+
+export class {{pascalCase name}}Resource extends Resource<any, Spec> {
+  protected transform(entity: any): Spec {
+    return entity;
+  }
+}

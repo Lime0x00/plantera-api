@@ -1,0 +1,18 @@
+import { BaseRepository } from '#infrastructure/database/base-repository';
+import { I{{pascalCase name}}Repository, {{pascalCase name}}CreateInput, {{pascalCase name}}UpdateInput, {{pascalCase name}}WhereUniqueInput } from './{{dashCase name}}.repository.interface';
+import { {{pascalCase name}} } from './domain';
+
+export class {{pascalCase name}}Repository
+  extends BaseRepository<
+    {{pascalCase name}},
+    {{pascalCase name}}WhereUniqueInput,
+    import('./{{dashCase name}}.types').{{pascalCase name}}WhereInput,
+    {{pascalCase name}}CreateInput,
+    {{pascalCase name}}UpdateInput
+  >
+  implements I{{pascalCase name}}Repository
+{
+  public constructor() {
+    super({{pascalCase name}});
+  }
+}

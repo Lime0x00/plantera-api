@@ -1,0 +1,55 @@
+import { ValidationError } from '#common/errors';
+import type {
+  I{{pascalCase name}}Repository,
+  {{pascalCase name}}WhereUniqueInput,
+  {{pascalCase name}}CreateInput,
+  {{pascalCase name}}UpdateInput,
+} from './{{dashCase name}}.repository.interface';
+import { {{pascalCase name}}Policy } from './{{dashCase name}}.policy';
+import { {{constantCase name}}_MESSAGES } from './{{dashCase name}}.messages';
+
+interface {{pascalCase name}}ServiceDeps {
+  policies: { {{camelCase name}}Policy: {{pascalCase name}}Policy };
+  repositories: { {{camelCase name}}Repository: I{{pascalCase name}}Repository };
+}
+
+export class {{pascalCase name}}Service {
+  #repository: I{{pascalCase name}}Repository;
+  #policy: {{pascalCase name}}Policy;
+
+  constructor({ policies: { {{camelCase name}}Policy }, repositories: { {{camelCase name}}Repository } }: {{pascalCase name}}ServiceDeps) {
+    this.#policy = {{camelCase name}}Policy;
+    this.#repository = {{camelCase name}}Repository;
+  }
+
+  async create(dto: {{pascalCase name}}CreateInput) {
+    if (!this.#policy.canCreate()) {
+      throw new ValidationError({{constantCase name}}_MESSAGES.createForbidden);
+    }
+    return this.#repository.create({ data: dto });
+  }
+
+  async findById(id: number) {
+    return this.#repository.findUnique({ where: { id } });
+  }
+
+  async findAll(page: number, limit: number) {
+    const [data, totalCount] = await Promise.all([
+      this.#repository.findMany({ skip: (page - 1) * limit, take: limit }),
+      this.#repository.count(),
+    ]);
+    return { data, totalCount };
+  }
+
+  async update(id: number, dto: {{pascalCase name}}UpdateInput) {
+    const entity = await this.findById(id);
+    if (!entity) {
+      throw new ValidationError({{constantCase name}}_MESSAGES.notFound);
+    }
+    return this.#repository.update({ where: { id }, data: dto });
+  }
+
+  async delete(id: number) {
+    return this.#repository.delete({ where: { id } });
+  }
+}
