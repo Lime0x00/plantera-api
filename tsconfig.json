@@ -1,0 +1,45 @@
+{
+  "compilerOptions": {
+    "target": "es2022",
+    "module": "esnext",
+    "moduleResolution": "bundler",
+    "esModuleInterop": true,
+    "forceConsistentCasingInFileNames": true,
+    "useDefineForClassFields": false,
+    "types": ["node"],
+    "strict": true,
+    "skipLibCheck": true,
+    "noEmit": true,
+    "noImplicitAny": true,
+    "strictNullChecks": true,
+    "exactOptionalPropertyTypes": true,
+    "strictPropertyInitialization": false,
+
+    "experimentalDecorators": true,
+    "emitDecoratorMetadata": true,
+
+    "paths": {
+      "#app/*": ["./src/*"],
+      "#config": ["./src/config/index.ts"],
+      "#config/*": ["./src/config/*"],
+      "#features/*": ["./src/features/*"],
+      "#infrastructure/*": ["./src/infrastructure/*"],
+      "#framework/*": ["./src/framework/*"],
+      "#common/types/generated/prisma": [
+        "./src/common/types/generated/prisma/client.ts"
+      ],
+      "#common/*": ["./src/common/*"],
+      "#routes": ["./src/routes/index.ts"],
+      "#routes/*": ["./src/routes/*"],
+      "#database/*": ["./database/*"]
+    }
+  },
+  "include": [
+    "src/**/*",
+    "database/**/*",
+    "eslint.config.ts",
+    "prisma.config.ts",
+    "tests/**/*"
+  ],
+  "exclude": ["node_modules", "dist", "**/*.spec.ts"]
+}
