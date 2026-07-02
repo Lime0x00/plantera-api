@@ -16,50 +16,52 @@ This is the primary REST API backend for the Plantera ecosystem. It serves reque
 
 ---
 
-## Running with Docker (Recommended)
+## Prerequisites
 
-### Development Mode with Hot Reload
+- **Node.js** 18+
+- **PostgreSQL** 15+ (running on `localhost:5432`)
+- **Redis** 7+ (running on `localhost:6379`)
+- **RabbitMQ** (optional, for queue workers)
 
-```bash
-# From the root directory, build and start
-docker compose --env-file .env.dev -f docker-compose.yml -f docker-compose.dev.yml build backend
-docker compose --env-file .env.dev -f docker-compose.yml -f docker-compose.dev.yml up -d backend
+> The full stack with all services (PostgreSQL, Redis, RabbitMQ, MailHog, ML service) is available via Docker Compose in the [DEPI-Project](https://github.com/EssaMohy/DEPI-Project) parent repository.
 
-# View logs
-docker compose --env-file .env.dev logs -f backend
+## Running Locally
 
-# Stop
-docker compose stop backend
-```
-
-The backend will be available at http://localhost:8000 with hot-reload enabled. Code changes sync automatically via bind mounts.
-
-### Production Mode
+### 1. Configure Environment
 
 ```bash
-# Build optimized image
-docker compose --env-file .env -f docker-compose.yml -f docker-compose.prod.yml build backend
-
-# Start
-docker compose --env-file .env -f docker-compose.yml -f docker-compose.prod.yml up -d backend
+cp .env.example .env
+# Edit .env with your PostgreSQL, Redis, and other credentials
 ```
 
-The backend will be available at http://localhost:8000.
+### 2. Install Dependencies
 
-### Environment Variables
+```bash
+npm install
+```
 
-The Docker templates live in `apps/backend/.env.docker`.
-Copy them to `apps/backend/.env` for the normal Docker stack or `apps/backend/.env.dev` for the dev override stack.
+### 3. Database Setup
 
-For local development without Docker, configure in `apps/backend/.env`:
+```bash
+# Push schema to database
+npx prisma db push
 
-```env
-DATABASE_URL=postgresql://postgres:postgres@localhost:5432/depiplant
-REDIS_HOST=localhost
-REDIS_PORT=6379
-RABBITMQ_HOST=localhost
-RABBITMQ_PORT=5672
-ANALYZER_URL=http://localhost:5000/v1
+# Generate Prisma client
+npx prisma generate
+```
+
+### 4. Run Development Server
+
+```bash
+npm run dev
+```
+
+The API gateway listens on http://localhost:8000
+
+### 5. Run Tests
+
+```bash
+npm run test
 ```
 
 ---
