@@ -23,6 +23,13 @@ This is the primary REST API backend for the Plantera ecosystem. It serves reque
 - **Redis** 7+ (running on `localhost:6379`)
 - **RabbitMQ** (optional, for queue workers)
 
+## Docker (Standalone)
+
+```bash
+docker build -t plantera-api .
+docker run -p 8000:8000 plantera-api
+```
+
 > The full stack with all services (PostgreSQL, Redis, RabbitMQ, MailHog, ML service) is available via Docker Compose in the [DEPI-Project](https://github.com/EssaMohy/DEPI-Project) parent repository.
 
 ## Running Locally
