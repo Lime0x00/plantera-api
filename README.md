@@ -27,14 +27,9 @@ This is the primary REST API backend for the Plantera ecosystem. It serves reque
 ## Communication with Plant Analyzer
 
 This backend calls the [plant-analyzer](https://github.com/Lime0x00/plant-analyzer) ML service for disease detection.
-Set `ANALYZER_URL` in your `.env`:
+By default it looks for the ML service at `http://localhost:5000/v1` — no config needed if both run locally.
 
-| Setup | `ANALYZER_URL` |
-|-------|----------------|
-| Both running locally | `http://localhost:5000/v1` |
-| Both in Docker (parent compose) | `http://plant-analyzer:5000/v1` |
-
-Default: `http://localhost:5000/v1`
+Override via `ANALYZER_URL` in `.env` if running on different hosts/ports.
 
 ## Docker (Standalone)
 
@@ -42,8 +37,6 @@ Default: `http://localhost:5000/v1`
 docker build -t plantera-api .
 docker run -p 8000:8000 plantera-api
 ```
-
-> The full stack with all services (PostgreSQL, Redis, RabbitMQ, MailHog, ML service) is available via Docker Compose in the [DEPI-Project](https://github.com/EssaMohy/DEPI-Project) parent repository.
 
 ## Running Locally
 
