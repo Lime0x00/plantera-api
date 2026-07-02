@@ -27,15 +27,45 @@ This is the primary REST API backend for the Plantera ecosystem. It serves reque
 ## Communication with Plant Analyzer
 
 This backend calls the [plant-analyzer](https://github.com/Lime0x00/plant-analyzer) ML service for disease detection.
-By default it looks for the ML service at `http://localhost:5000/v1` — no config needed if both run locally.
 
-Override via `ANALYZER_URL` in `.env` if running on different hosts/ports.
+| Setup | `ANALYZER_URL` |
+|-------|----------------|
+| Both running locally (no Docker) | `http://localhost:5000/v1` (default) |
+| Both running in Docker | `http://plant-analyzer:5000/v1` |
+
+When both are in Docker, put them on the same network so the backend can resolve `plant-analyzer` by container name.
 
 ## Docker (Standalone)
 
+### With PostgreSQL, Redis (via docker-compose)
+
+Run your own Postgres + Redis, then connect the backend:
+
 ```bash
 docker build -t plantera-api .
-docker run -p 8000:8000 plantera-api
+
+docker run -p 8000:8000 \
+  -e DATABASE_URL=postgresql://postgres:postgres@host.docker.internal:5432/depiplant \
+  -e REDIS_HOST=host.docker.internal \
+  -e ANALYZER_URL=http://plant-analyzer:5000/v1 \
+  --network plantera-net \
+  plantera-api
+```
+
+### With Plant Analyzer on the same network
+
+```bash
+# 1. Create shared network
+docker network create plantera-net
+
+# 2. Start plant-analyzer
+docker run -d --network plantera-net --name plant-analyzer -p 5000:5000 plant-analyzer
+
+# 3. Start backend (connects to plant-analyzer by name)
+docker run --network plantera-net -p 8000:8000 \
+  -e DATABASE_URL=postgresql://postgres:postgres@host.docker.internal:5432/depiplant \
+  -e ANALYZER_URL=http://plant-analyzer:5000/v1 \
+  plantera-api
 ```
 
 ## Running Locally
