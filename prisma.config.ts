@@ -8,8 +8,9 @@ const dbHost = process.env.DB_HOST || 'localhost';
 const dbPort = process.env.DB_PORT || '5432';
 const dbName = process.env.DB_NAME || 'depiplant';
 
-const computedUrl = `${dbDriver}://${dbUser}:${dbPassword}@${dbHost}:${dbPort}/${dbName}`;
-console.log(computedUrl);
+const computedUrl =
+  process.env.DATABASE_URL ||
+  `${dbDriver}://${dbUser}:${dbPassword}@${dbHost}:${dbPort}/${dbName}`;
 
 export default defineConfig({
   schema: 'prisma/schema.prisma',
