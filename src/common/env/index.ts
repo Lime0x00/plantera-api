@@ -23,6 +23,7 @@ switch (NODE_ENV) {
 }
 
 dotenv.config({ path, quiet: true });
+dotenv.config({ path: '.env', quiet: true });
 
 export function env<T = unknown>(key: string, fallback?: T): T {
   const value = process.env[key];

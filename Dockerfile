@@ -48,8 +48,7 @@ WORKDIR /app
 RUN apk add --no-cache dumb-init
 
 ENV NODE_ENV=production \
-    PORT=8000 \
-    DATABASE_URL=postgresql://postgres:postgres@localhost:5432/depiplant
+    PORT=8000
 
 COPY --from=builder /app/prisma ./prisma
 COPY --from=builder /app/prisma.config.ts ./prisma.config.ts
