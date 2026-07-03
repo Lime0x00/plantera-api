@@ -49,12 +49,12 @@ RUN apk add --no-cache dumb-init
 ENV NODE_ENV=production \
     PORT=8000
 
+COPY --from=builder /app/prisma ./prisma
 COPY package.json package-lock.json* ./
-RUN npm install --omit=dev && npm cache clean --force
+RUN npm install --omit=dev && npx prisma generate && npm cache clean --force && \
+    printf 'export * from "./index.js";\n' > /app/src/common/types/generated/prisma/client.ts
 
 COPY --from=builder /app/dist ./dist
-COPY --from=builder /app/prisma ./prisma
-COPY --from=builder /app/src/common/types/generated/prisma ./src/common/types/generated/prisma
 
 EXPOSE 8000
 
