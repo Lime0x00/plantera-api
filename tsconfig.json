@@ -26,7 +26,7 @@
       "#infrastructure/*": ["./src/infrastructure/*"],
       "#framework/*": ["./src/framework/*"],
       "#common/types/generated/prisma": [
-        "./src/common/types/generated/prisma/client.ts"
+        "./src/common/types/generated/prisma/index"
       ],
       "#common/*": ["./src/common/*"],
       "#routes": ["./src/routes/index.ts"],
