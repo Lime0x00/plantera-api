@@ -83,7 +83,11 @@ export class CommunityService {
     return entity;
   }
 
-  async findAllPublished(cursor?: number, limit: number = 20) {
+  async findAllPublished(
+    cursor?: number,
+    limit: number = 20,
+    viewerId?: number
+  ) {
     const repository = this.#repository.withoutTrashed();
     const where = cursor
       ? { published: true, id: { lt: cursor } }
@@ -98,6 +102,18 @@ export class CommunityService {
 
     const hasMore = data.length > limit;
     const posts = hasMore ? data.slice(0, limit) : data;
+
+    if (viewerId) {
+      const postIds = posts.map((p) => p.id);
+      const likes = await this.#likeRepository.findMany({
+        where: { postId: { in: postIds }, authorId: viewerId },
+      });
+      const likedSet = new Set(likes.map((l) => l.postId));
+      for (const post of posts) {
+        (post as any).liked = likedSet.has(post.id);
+      }
+    }
+
     const nextCursor = hasMore ? posts[posts.length - 1].id : undefined;
 
     return {
@@ -236,8 +252,32 @@ export class CommunityService {
     );
     if (existing) {
       await this.#likeRepository.deleteByPostAndAuthor(postId, userId);
-      return { liked: false };
+      const likesCount = await this.#likeRepository.count({ where: { postId } });
+      return { liked: false, likesCount };
     }
+
+    const softDeleted = await this.#likeRepository.findDeletedByPostAndAuthor(
+      postId,
+      userId
+    );
+    if (softDeleted) {
+      await this.#likeRepository.restoreByPostAndAuthor(postId, userId);
+
+      if (this.#notificationService && post.authorId !== userId) {
+        this.#notificationService
+          .create({
+            userId: post.authorId,
+            type: 'like',
+            title: 'New Like',
+            body: 'Someone liked your post',
+          })
+          .catch(() => {});
+      }
+
+      const likesCount = await this.#likeRepository.count({ where: { postId } });
+      return { liked: true, likesCount };
+    }
+
     await this.#likeRepository.create({ data: { postId, authorId: userId } });
 
     if (this.#notificationService && post.authorId !== userId) {
@@ -251,7 +291,8 @@ export class CommunityService {
         .catch(() => {});
     }
 
-    return { liked: true };
+    const likesCount = await this.#likeRepository.count({ where: { postId } });
+    return { liked: true, likesCount };
   }
 
   async getPostLikes(postId: number) {

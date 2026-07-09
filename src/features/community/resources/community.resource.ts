@@ -19,17 +19,19 @@ interface PostResourceOutput {
   };
   commentCount: number;
   likesCount: number;
+  liked: boolean;
   createdAt: Date;
 }
 
 export class PostResource extends Resource<
-  Post & { author?: any; _count?: { comments?: number; likes?: number } },
+  Post & { author?: any; _count?: { comments?: number; likes?: number }; liked?: boolean },
   PostResourceOutput
 > {
   protected transform(
     entity: Post & {
       author?: any;
       _count?: { comments?: number; likes?: number };
+      liked?: boolean;
     }
   ): PostResourceOutput {
     return {
@@ -57,6 +59,7 @@ export class PostResource extends Resource<
           },
       commentCount: entity._count?.comments ?? 0,
       likesCount: entity._count?.likes ?? 0,
+      liked: entity.liked ?? false,
       createdAt: entity.createdAt!,
     };
   }

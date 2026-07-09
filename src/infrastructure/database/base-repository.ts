@@ -49,8 +49,9 @@ export abstract class BaseRepository<
     return this;
   }
 
-  private scoped<T>(args: T): T {
-    if (this.scope === 'withTrashed') {
+  private scoped<T>(args: T, scopeOverride?: SoftDeleteScope): T {
+    const activeScope = scopeOverride ?? this.scope;
+    if (activeScope === 'withTrashed') {
       return args;
     }
     const q = {
@@ -59,8 +60,8 @@ export abstract class BaseRepository<
         ...((args as { where?: Record<string, unknown> })?.where || {}),
       },
     };
-    if (this.scope === 'withoutTrashed') q.where.deletedAt = null;
-    else if (this.scope === 'onlyTrashed')
+    if (activeScope === 'withoutTrashed') q.where.deletedAt = null;
+    else if (activeScope === 'onlyTrashed')
       q.where.deletedAt = { gte: new Date('1970-01-01') };
     return q;
   }
@@ -81,41 +82,51 @@ export abstract class BaseRepository<
     }
   }
 
-  public async findUnique(args: {
-    where: TWhereUnique;
-    select?: Record<string, boolean>;
-    include?: Record<string, boolean | object>;
-  }): Promise<TEntity | null> {
+  public async findUnique(
+    args: {
+      where: TWhereUnique;
+      select?: Record<string, boolean>;
+      include?: Record<string, boolean | object>;
+    },
+    scopeOverride?: SoftDeleteScope
+  ): Promise<TEntity | null> {
     const raw = await this.driver.findUnique(args);
     if (!raw) {
       return null;
     }
     const entity = this.model.hydrate(raw);
+    const activeScope = scopeOverride ?? this.scope;
 
-    if (this.scope === 'withoutTrashed' && entity.isTrashed()) return null;
-    if (this.scope === 'onlyTrashed' && !entity.isTrashed()) return null;
+    if (activeScope === 'withoutTrashed' && entity.isTrashed()) return null;
+    if (activeScope === 'onlyTrashed' && !entity.isTrashed()) return null;
 
     return entity;
   }
 
-  public async findMany(args?: {
-    where?: TWhereMany;
-    select?: Record<string, boolean>;
-    include?: Record<string, boolean | object>;
-    orderBy?:
-      | Record<string, 'asc' | 'desc'>
-      | Array<Record<string, 'asc' | 'desc'>>;
-    skip?: number;
-    take?: number;
-  }): Promise<TEntity[]> {
+  public async findMany(
+    args?: {
+      where?: TWhereMany;
+      select?: Record<string, boolean>;
+      include?: Record<string, boolean | object>;
+      orderBy?:
+        | Record<string, 'asc' | 'desc'>
+        | Array<Record<string, 'asc' | 'desc'>>;
+      skip?: number;
+      take?: number;
+    },
+    scopeOverride?: SoftDeleteScope
+  ): Promise<TEntity[]> {
     const raw = await this.driver.findMany(
-      this.scoped(args || { where: {} as TWhereMany })
+      this.scoped(args || { where: {} as TWhereMany }, scopeOverride)
     );
     return this.model.hydrateMany(raw);
   }
 
-  public async count(args?: { where?: TWhereMany }): Promise<number> {
-    return this.driver.count(this.scoped(args || {}));
+  public async count(
+    args?: { where?: TWhereMany },
+    scopeOverride?: SoftDeleteScope
+  ): Promise<number> {
+    return this.driver.count(this.scoped(args || {}, scopeOverride));
   }
 
   public async create(args: {

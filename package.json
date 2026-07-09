@@ -1,5 +1,5 @@
 {
-  "name": "depi-backend",
+  "name": "plantera-backend",
   "version": "0.1.0",
   "type": "module",
   "main": "dist/server.js",
@@ -17,10 +17,10 @@
     "dev:build": "tsup --watch",
     "dev:run": "NODE_ENV=development nodemon --ext ts --exec 'npx tsx' src/server.ts",
     "dev:doppler": "doppler run -p backend -c dev -- npm run dev:run",
-    "dev:local": "dotenv -e .env.dev -- npm run dev:run",
+    "dev:local": "dotenv -e .env -- npm run dev:run",
     "dev:worker:run": "NODE_ENV=development nodemon --ext ts --exec 'npx tsx' src/worker.ts",
     "dev:worker:doppler": "doppler run -p backend -c dev -- npm run dev:worker:run",
-    "dev:worker:local": "dotenv -e .env.dev -- npm run dev:worker:run",
+    "dev:worker:local": "dotenv -e .env -- npm run dev:worker:run",
     "dev:worker": "if command -v doppler >/dev/null 2>&1 && doppler configs >/dev/null 2>&1; then npm run dev:worker:doppler; else npm run dev:worker:local; fi",
     "dev": "concurrently --prefix none \"npm run dev:build\" \"if command -v doppler >/dev/null 2>&1 && doppler configs >/dev/null 2>&1; then npm run dev:doppler; else npm run dev:local; fi\"",
     "start:worker": "NODE_ENV=production node dist/worker.js",
@@ -35,7 +35,7 @@
     "prebuild": "npm run openapi:generate",
     "openapi:generate": "npx openapi-typescript src/openapi/v1.json -o src/common/types/generated/openapi.types.ts && node scripts/generate-api-messages.js",
     "db:migrate:doppler": "doppler run -p backend -c dev -- npx prisma migrate dev && doppler run -p backend -c dev -- npx prisma generate",
-    "db:migrate:local": "dotenv -e .env.dev -- npx prisma migrate dev && dotenv -e .env.dev -- npx prisma generate",
+    "db:migrate:local": "dotenv -e .env -- npx prisma migrate dev && dotenv -e .env -- npx prisma generate",
     "db:migrate": "if command -v doppler >/dev/null 2>&1 && doppler configs >/dev/null 2>&1; then npm run db:migrate:doppler; else npm run db:migrate:local; fi",
     "db:deploy:prod": "doppler run -p backend -c prd -- npx prisma migrate deploy && doppler run -p backend -c prd -- npx prisma generate",
     "db:deploy:stag": "doppler run -p backend -c stg -- npx prisma migrate deploy && doppler run -p backend -c stg -- npx prisma generate"

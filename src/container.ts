@@ -250,4 +250,18 @@ export function registerObservers(): void {
   authService.registerObserver(new AuthObserver(mailService, cacheService));
 }
 
+export function registerNotificationServices(): void {
+  const communityService =
+    container.resolve<import('#features/community/community.service').CommunityService>(
+      'communityService'
+    );
+  const notificationService =
+    container.resolve<import('#features/notification/notification.service').NotificationService>(
+      'notificationService'
+    );
+  communityService.setNotificationService({
+    create: (dto) => notificationService.create(dto) as Promise<unknown>,
+  });
+}
+
 export { container };

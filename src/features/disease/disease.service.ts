@@ -2,6 +2,7 @@ import { NotFoundError } from '#common/errors';
 import { DiseaseErrors } from './disease.errors';
 import type { IDiseaseRepository } from './disease.repository.interface';
 import { paginate, clampLimit, offset } from '#common/helpers';
+import { Disease } from './domain';
 
 interface DiseaseServiceDeps {
   repositories: { diseaseRepository: IDiseaseRepository };
@@ -36,8 +37,23 @@ export class DiseaseService {
   }
 
   async findByName(name: string) {
-    return this.#repository.findMany({
-      where: { name },
+    const normalizedInput = name.toLowerCase().replace(/[_\-]/g, ' ').trim();
+
+    const allDiseases = await this.#repository.findMany({});
+
+    return allDiseases.filter((d) => {
+      const normalizedDbName = d.name?.toLowerCase().replace(/[_\-]/g, ' ').trim() ?? '';
+      if (normalizedDbName === normalizedInput) return true;
+
+      if (d.otherNames) {
+        const otherNames = Disease.extractArray(d.otherNames);
+        return otherNames.some(
+          (on: string) =>
+            on.toLowerCase().replace(/[_\-]/g, ' ').trim() === normalizedInput
+        );
+      }
+
+      return false;
     });
   }
 }

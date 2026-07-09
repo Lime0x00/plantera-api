@@ -11,7 +11,7 @@ export class NotificationGateway {
   private socketUsers: Map<string, number> = new Map();
 
   constructor(httpServer: HttpServer) {
-    const origins = config<string[]>('app.allowed_origins', ['*']);
+    const origins = config<string[]>('app.allowed_origins', ['http://localhost:3000', 'http://localhost:3001']);
     const corsOrigin = origins.length === 1 && origins[0] === '*' ? true : origins;
 
     this.io = new Server(httpServer, {

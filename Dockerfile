@@ -1,67 +1,51 @@
-# =============================================================================
-# DEPI Backend Dockerfile
-# Supports: development, builder, production stages
-# =============================================================================
-
-# =============================================================================
-# Base stage - shared dependencies
-# =============================================================================
 FROM node:22-alpine AS base
 WORKDIR /app
 RUN apk add --no-cache dumb-init
+COPY docker-entrypoint.sh ./
+RUN chmod +x docker-entrypoint.sh
+ENTRYPOINT ["./docker-entrypoint.sh"]
 
-# =============================================================================
-# Development stage - hot reload with nodemon + tsx
-# =============================================================================
 FROM base AS development
-ENV NODE_ENV=development \
-    PORT=8000
-
+ENV NODE_ENV=development PORT=8000
 COPY package.json package-lock.json* ./
 RUN npm install
-
 COPY . .
 RUN npx prisma generate
-
 EXPOSE 8000
 CMD ["dumb-init", "npx", "nodemon", "--ext", "ts", "--exec", "npx", "tsx", "src/server.ts"]
 
-# =============================================================================
-# Builder stage - compile TypeScript for production
-# =============================================================================
 FROM base AS builder
-ENV NODE_ENV=production \
-    DATABASE_URL=postgresql://postgres:postgres@localhost:5432/depiplant
-
+ENV NODE_ENV=production
 COPY package.json package-lock.json* ./
 RUN npm install --include=dev
-
 COPY . .
 RUN npx prisma generate && npm run build
 
-# =============================================================================
-# Production stage - lightweight runtime
-# =============================================================================
 FROM node:22-alpine AS production
 WORKDIR /app
-
-RUN apk add --no-cache dumb-init
-
-ENV NODE_ENV=production \
-    PORT=8000
+RUN apk add --no-cache dumb-init wget
+ENV NODE_ENV=production PORT=8000
 
 COPY --from=builder /app/prisma ./prisma
-COPY --from=builder /app/prisma.config.ts ./prisma.config.ts
+COPY --from=builder /app/prisma.config.ts ./
 COPY package.json package-lock.json* ./
-RUN npm install --omit=dev && npx prisma generate && npm cache clean --force && \
-    printf 'export * from "./index.js";\n' > /app/src/common/types/generated/prisma/client.ts
+RUN npm install --omit=dev && \
+    npm cache clean --force
 
 COPY --from=builder /app/dist ./dist
+COPY --from=builder /app/src/common/types/generated/prisma ./src/common/types/generated/prisma
+COPY --from=builder /app/src/infrastructure/mail/templates /app/dist/src/infrastructure/mail/templates
+COPY docker-entrypoint.sh ./
+RUN chmod +x docker-entrypoint.sh
+
+COPY database/data/articles.json ./database/data/articles.json
+COPY database/data/plants.json ./database/data/plants.json
+COPY database/data/diseases.json ./database/data/diseases.json
+COPY database/data ./dist/database/data
 
 # Source files needed by seeders (run via tsx during startup)
 COPY --from=builder /app/src ./src
 
 EXPOSE 8000
-
-COPY --from=builder /app/database ./database
-CMD ["dumb-init", "sh", "-c", "npx prisma migrate deploy && npm run seed && node dist/server.js"]
+ENTRYPOINT ["./docker-entrypoint.sh"]
+CMD ["dumb-init", "node", "dist/src/server.cjs"]

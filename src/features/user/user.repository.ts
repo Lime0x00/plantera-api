@@ -39,8 +39,6 @@ export class UserRepository
     where: UserWhereUniqueInput;
     data: UserUpdateInput;
   }): Promise<User> {
-    // Silent update doesn't trigger observers or policy checks
-    // We can call base update directly
-    return this.update(args);
+    return super.updateSilent(args);
   }
 }

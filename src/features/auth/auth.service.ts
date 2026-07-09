@@ -170,6 +170,12 @@ export class AuthService {
       );
     }
 
+    if (user.lockedUntil && user.lockedUntil <= new Date()) {
+      await this.#userService.resetLoginAttempts(user.id!);
+      user.failedLoginAttempts = 0;
+      user.lockedUntil = null;
+    }
+
     const valid = await bcrypt.compare(dto.password, user.password);
     if (!valid) {
       const newAttempts = (user.failedLoginAttempts ?? 0) + 1;

@@ -143,11 +143,6 @@ export class DiagnosticService {
     );
 
     const valid = enriched.filter((e): e is EnrichedDetection => e !== null);
-    if (!valid.length) {
-      throw new Error(
-        'No matching diseases found in database for ML detections'
-      );
-    }
     return valid;
   }
 

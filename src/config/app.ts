@@ -21,12 +21,12 @@ export const appConfig: AppConfig = {
   name: env<string>('APP_NAME', 'My Core API'),
   driver_type: env<string>('DATABASE_DRIVER', 'PRISMA'),
 
-  allowed_origins: env<string>('ALLOWED_ORIGINS', '*').split(','),
+  allowed_origins: env<string>('ALLOWED_ORIGINS', 'http://localhost:3000,http://localhost:3001').split(','),
   allowed_methods: env<string>(
     'ALLOWED_METHODS',
     'GET,POST,PUT,PATCH,DELETE'
   ).split(','),
-  allowed_headers: env<string>('ALLOWED_HEADERS', '*').split(','),
+  allowed_headers: env<string>('ALLOWED_HEADERS', 'Content-Type,Authorization').split(','),
 
   enable_security_headers: env<boolean>('ENABLE_SECURITY_HEADERS', false),
   log_format: env<string>('LOG_FORMAT', 'text'),

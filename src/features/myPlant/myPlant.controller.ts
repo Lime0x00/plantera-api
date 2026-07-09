@@ -162,18 +162,7 @@ export class MyPlantController extends Controller {
             req.body.imageUrl
           );
 
-      if (result.status === 'identified') {
-        return super.created(
-          res,
-          {
-            myPlant: this.#resource.make(result.myPlant!),
-            recordId: result.recordId,
-          },
-          'Plant identified and added to your collection.'
-        );
-      }
-
-      return super.ok(res, result, 'Plant identification started');
+      return super.ok(res, result, 'Plant identification completed');
     });
   }
 
@@ -183,12 +172,12 @@ export class MyPlantController extends Controller {
     next: NextFunction
   ) {
     return super.run(next, async () => {
-      const { recordId, predictionIndex } = req.body;
+      const { recordId, predictionIndex, index } = req.body;
       const { myPlant, prediction } =
         await this.#myPlantService.confirmIdentify(
           req.user!.userId,
           recordId,
-          predictionIndex
+          predictionIndex ?? index
         );
 
       return super.created(

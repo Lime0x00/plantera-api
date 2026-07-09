@@ -1,0 +1,120 @@
+name: plantera
+
+services:
+  db:
+    image: postgres:15-alpine
+    container_name: plantera-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB:-plantera}
+      POSTGRES_USER: ${POSTGRES_USER:-postgres}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-postgres}
+    ports:
+      - "${DB_PORT:-5432}:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-postgres} -d ${POSTGRES_DB:-plantera}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
+    networks:
+      - plantera-network
+
+  redis:
+    image: redis:7-alpine
+    container_name: plantera-redis
+    restart: unless-stopped
+    ports:
+      - "${REDIS_PORT:-6379}:6379"
+    volumes:
+      - redis_data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - plantera-network
+
+  rabbitmq:
+    image: rabbitmq:3-management-alpine
+    container_name: plantera-rabbitmq
+    restart: unless-stopped
+    environment:
+      RABBITMQ_DEFAULT_USER: ${RABBITMQ_USER:-guest}
+      RABBITMQ_DEFAULT_PASS: ${RABBITMQ_PASS:-guest}
+    ports:
+      - "${RABBITMQ_PORT:-5672}:5672"
+      - "${RABBITMQ_MGMT_PORT:-15672}:15672"
+    volumes:
+      - rabbitmq_data:/var/lib/rabbitmq
+    healthcheck:
+      test: ["CMD", "rabbitmq-diagnostics", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - plantera-network
+
+  backend:
+    build:
+      context: .
+      target: production
+    container_name: plantera-backend
+    restart: always
+    env_file: ./.env
+    ports:
+      - "${BACKEND_PORT:-8000}:8000"
+    volumes:
+      - uploads_data:/app/public/uploads
+    depends_on:
+      db: { condition: service_healthy }
+      redis: { condition: service_healthy }
+      rabbitmq: { condition: service_healthy }
+    healthcheck:
+      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://127.0.0.1:8000/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+    deploy:
+      resources:
+        limits: { cpus: '2', memory: 2G }
+        reservations: { cpus: '0.5', memory: 512M }
+    networks:
+      - plantera-network
+
+  worker:
+    build:
+      context: .
+      target: production
+    container_name: plantera-worker
+    restart: always
+    command: ["dumb-init", "node", "dist/src/worker.cjs"]
+    environment:
+      DISABLE_DB_INIT: "true"
+    env_file: ./.env
+    volumes:
+      - uploads_data:/app/public/uploads
+    depends_on:
+      db: { condition: service_healthy }
+      redis: { condition: service_healthy }
+      rabbitmq: { condition: service_healthy }
+    deploy:
+      resources:
+        limits: { cpus: '1', memory: 1G }
+        reservations: { cpus: '0.25', memory: 256M }
+    networks:
+      - plantera-network
+
+volumes:
+  postgres_data:
+  redis_data:
+  rabbitmq_data:
+  uploads_data:
+
+networks:
+  plantera-network:
+    driver: bridge

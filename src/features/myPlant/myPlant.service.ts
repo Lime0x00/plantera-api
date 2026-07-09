@@ -1,4 +1,4 @@
-import { ConflictError, NotFoundError, ValidationError } from '#common/errors';
+import { ConflictError, NotFoundError, TooManyRequestsError, ValidationError } from '#common/errors';
 import { config, paginate, offset } from '#common/helpers';
 import { PlantService } from '#features/plant';
 import { DiagnosticService } from '#features/diagnostic';
@@ -23,6 +23,7 @@ import { MyPlantErrors } from './myPlant.errors';
 import { MyPlantModel } from './domain/myPlant.model';
 
 export const IDENTIFY_CONFIDENCE_THRESHOLD = 0.7;
+const CARE_COOLDOWN_HOURS = 1;
 
 interface MyPlantServiceDeps {
   myPlantRepository: IMyPlantRepository;
@@ -111,45 +112,6 @@ export class MyPlantService {
   ) {
     const { plant } = await this.#plantService.getPlantById(plantId);
 
-    const existingTrashed = await this.#repository.withTrashed().findMany({
-      where: { userId, plantId },
-    });
-    this.#repository.withoutTrashed();
-
-    if (existingTrashed.length > 0) {
-      const existing = existingTrashed[0];
-      if (!existing.isTrashed()) {
-        throw new ConflictError(MyPlantErrors.ALREADY_EXISTS, {
-          plantId: {
-            code: 'CONFLICT',
-            message: 'This plant is already in your garden collection.',
-          },
-        });
-      }
-
-      const wf = plant.wateringFrequency ?? null;
-      const ff = plant.fertilizingFrequency ?? null;
-
-      await this.#repository.restore({
-        where: { id: existing.id },
-      });
-
-      const updated = await this.#repository.update({
-        where: { id: existing.id },
-        data: {
-          storageDisk: stored?.disk ?? null,
-          storagePath: stored?.path ?? null,
-          wateringFrequency: wf,
-          fertilizingFrequency: ff,
-          nextWatering: MyPlantModel.calculateNextDate(wf),
-          nextFertilizing: MyPlantModel.calculateNextDate(ff),
-        },
-        include: { plant: true },
-      });
-
-      return { myPlant: updated };
-    }
-
     const wf = plant.wateringFrequency ?? null;
     const ff = plant.fertilizingFrequency ?? null;
 
@@ -189,6 +151,20 @@ export class MyPlantService {
       throw new NotFoundError(MyPlantErrors.NOT_FOUND);
     }
 
+    if (existing.lastWatered) {
+      const hoursSinceLastWater =
+        (Date.now() - new Date(existing.lastWatered).getTime()) / 3_600_000;
+      if (hoursSinceLastWater < CARE_COOLDOWN_HOURS) {
+        const retryAfterMinutes = Math.ceil(
+          CARE_COOLDOWN_HOURS * 60 - hoursSinceLastWater * 60
+        );
+        throw new TooManyRequestsError(
+          `Plant was already watered recently. Try again in ${retryAfterMinutes} minutes.`,
+          { retryAfterMinutes }
+        );
+      }
+    }
+
     const now = new Date();
     const freq = existing.wateringFrequency;
     const updateData: MyPlantUpdateInput = {
@@ -214,6 +190,20 @@ export class MyPlantService {
     });
     if (!existing || existing.userId !== userId) {
       throw new NotFoundError(MyPlantErrors.NOT_FOUND);
+    }
+
+    if (existing.lastFertilized) {
+      const hoursSinceLastFert =
+        (Date.now() - new Date(existing.lastFertilized).getTime()) / 3_600_000;
+      if (hoursSinceLastFert < CARE_COOLDOWN_HOURS) {
+        const retryAfterMinutes = Math.ceil(
+          CARE_COOLDOWN_HOURS * 60 - hoursSinceLastFert * 60
+        );
+        throw new TooManyRequestsError(
+          `Plant was already fertilized recently. Try again in ${retryAfterMinutes} minutes.`,
+          { retryAfterMinutes }
+        );
+      }
     }
 
     const now = new Date();
@@ -494,86 +484,15 @@ export class MyPlantService {
       'ml.identifyThreshold',
       IDENTIFY_CONFIDENCE_THRESHOLD
     );
-    const confident = enriched.filter(
-      (p) => p.confidence >= threshold && p.plantId != null
-    );
-    const suggestions = confident.map((p) => ({
-      classId: p.classId,
-      className: p.className,
-      confidence: p.confidence,
-      plantId: p.plantId!,
-      plantName: p.plant?.commonName ?? p.className,
-      imageUrl: p.plant?.imageUrl ?? null,
-    }));
+    const topPredictions = enriched
+      .map((p, i) => ({ ...p, originalIndex: i }))
+      .filter((p) => p.confidence >= threshold)
+      .sort((a, b) => b.confidence - a.confidence)
+      .slice(0, 3);
 
-    if (suggestions.length === 0) {
-      await this.#diagnosticRepository.update({
-        where: { id: record.id },
-        data: { storageDisk: storedFile!.disk, storagePath: storedFile!.path },
-      });
-      await this.#diagnosticService.updateRecordStatus(
-        record.id,
-        DiagnosticStatus.COMPLETED,
-        {
-          result: {
-            predictions: enriched,
-            imageUrl: storedImageUrl,
-            status: 'cannot_identify',
-          },
-        }
-      );
-      return {
-        recordId: record.id,
-        status: 'cannot_identify',
-        imageUrl: storedImageUrl,
-        suggestions: enriched.slice(0, 5).map((p) => ({
-          classId: p.classId,
-          className: p.className,
-          confidence: p.confidence,
-          plantId: p.plantId,
-          plantName: p.plant?.commonName ?? p.className,
-          imageUrl: p.plant?.imageUrl ?? null,
-        })),
-      };
-    }
+    const hasCatalogMatch = topPredictions.some((p) => p.plantId != null);
 
-    if (suggestions.length === 1) {
-      const chosen = suggestions[0];
-      const { myPlant } = await this.addToMyPlants(
-        userId,
-        chosen.plantId,
-        storedFile
-      );
-      await this.#diagnosticRepository.update({
-        where: { id: record.id },
-        data: {
-          plantId: chosen.plantId,
-          myPlantId: myPlant.id!,
-          status: DiagnosticStatus.COMPLETED,
-          storageDisk: storedFile!.disk,
-          storagePath: storedFile!.path,
-        },
-      });
-      await this.#diagnosticService.updateRecordStatus(
-        record.id,
-        DiagnosticStatus.COMPLETED,
-        {
-          result: {
-            predictions: enriched,
-            imageUrl: storedImageUrl,
-            status: 'identified',
-            plantId: chosen.plantId,
-          },
-        }
-      );
-      return {
-        recordId: record.id,
-        status: 'identified',
-        myPlant,
-        imageUrl: storedImageUrl,
-        suggestions: [],
-      };
-    }
+    const status = hasCatalogMatch ? 'suggestions' : 'cannot_identify';
 
     await this.#diagnosticRepository.update({
       where: { id: record.id },
@@ -586,15 +505,24 @@ export class MyPlantService {
         result: {
           predictions: enriched,
           imageUrl: storedImageUrl,
-          status: 'suggestions',
+          status,
         },
       }
     );
+
     return {
       recordId: record.id,
-      status: 'suggestions',
+      status,
       imageUrl: storedImageUrl,
-      suggestions,
+      suggestions: topPredictions.map((p) => ({
+        classId: p.classId,
+        className: p.className,
+        confidence: p.confidence,
+        plantId: p.plantId,
+        plantName: p.plant?.commonName ?? p.className,
+        imageUrl: p.plant?.imageUrl ?? null,
+        predictionIndex: p.originalIndex,
+      })),
     };
   }
 

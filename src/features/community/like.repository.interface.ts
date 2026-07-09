@@ -29,6 +29,14 @@ export interface ILikeRepository {
     postId: number,
     authorId: number
   ): Promise<LikeModel | null>;
+  findDeletedByPostAndAuthor(
+    postId: number,
+    authorId: number
+  ): Promise<LikeModel | null>;
+  restoreByPostAndAuthor(
+    postId: number,
+    authorId: number
+  ): Promise<LikeModel | null>;
   deleteByPostAndAuthor(
     postId: number,
     authorId: number

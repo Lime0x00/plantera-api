@@ -10,7 +10,7 @@ import type { Locale } from './i18n';
 import { t } from './i18n';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
-const TEMPLATES_DIR = path.resolve(__dirname, 'templates');
+const TEMPLATES_DIR = path.resolve(__dirname, 'infrastructure/mail/templates');
 
 interface MailServiceDeps {
   queueService: QueueService;

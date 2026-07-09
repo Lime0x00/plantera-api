@@ -90,7 +90,52 @@ export class PlantService {
   }
 
   async findByClassifierName(name: string) {
-    return this.#repository.findMany({ where: { classifierName: name } });
+    const normalized = name.toLowerCase().replace(/[_\-()]/g, ' ').replace(/\s+/g, ' ').trim();
+    const classifierKey = normalized.replace(/ /g, '_');
+
+    const baseName = name.replace(/\s*\(.*?\)\s*/g, '').trim();
+    const baseClassifierKey = baseName.toLowerCase()
+      .replace(/[_\-()]/g, ' ').replace(/\s+/g, ' ').trim().replace(/ /g, '_');
+
+    const byClassifier = await this.#repository.findMany({
+      where: { classifierName: { equals: baseClassifierKey, mode: 'insensitive' } },
+    });
+    if (byClassifier.length > 0) return byClassifier;
+
+    const byClassifierContains = await this.#repository.findMany({
+      where: { classifierName: { contains: classifierKey, mode: 'insensitive' } },
+    });
+    if (byClassifierContains.length > 0) return byClassifierContains;
+
+    const byCommon = await this.#repository.findMany({
+      where: { commonName: { contains: normalized, mode: 'insensitive' } },
+    });
+    if (byCommon.length > 0) return byCommon;
+
+    const byScientific = await this.#repository.findMany({
+      where: { scientificName: { contains: normalized, mode: 'insensitive' } },
+    });
+    if (byScientific.length > 0) return byScientific;
+
+    const tokens = normalized.split(/\s+/).filter((t) => t.length > 2);
+    if (tokens.length > 1) {
+      const matches = await this.#repository.findMany({});
+      return matches.filter((plant) =>
+        tokens.every((token) => {
+          const haystack = [
+            plant.commonName,
+            plant.scientificName,
+            plant.classifierName,
+          ]
+            .filter(Boolean)
+            .join(' ')
+            .toLowerCase();
+          return haystack.includes(token);
+        })
+      );
+    }
+
+    return [];
   }
 
   async getPlantById(id: number) {

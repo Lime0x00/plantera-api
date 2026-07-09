@@ -26,6 +26,9 @@ export class Article extends BaseModel implements ImageStorable {
   }
 
   resolveImageUrl(): string | null {
+    if (this.storageDisk === 'url' && this.storagePath) {
+      return this.storagePath;
+    }
     return this.storageDisk && this.storagePath
       ? StorageFactory.disk(this.storageDisk).url(this.storagePath)
       : null;

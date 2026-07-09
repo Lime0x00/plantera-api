@@ -44,7 +44,8 @@ export interface IMyPlantRepository {
     args: FindUniqueArgs<MyPlantWhereUniqueInput>
   ): Promise<MyPlantModel | null>;
   findMany(
-    args?: FindManyArgs<Record<string, unknown>>
+    args?: FindManyArgs<Record<string, unknown>>,
+    scopeOverride?: 'withTrashed' | 'withoutTrashed' | 'onlyTrashed'
   ): Promise<MyPlantModel[]>;
   update(
     args: UpdateArgs<MyPlantWhereUniqueInput, MyPlantUpdateInput>

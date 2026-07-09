@@ -1,0 +1,37 @@
+services:
+  mailhog:
+    image: mailhog/mailhog
+    container_name: plantera-mailhog
+    restart: unless-stopped
+    ports:
+      - "25025:1025"
+      - "25026:8025"
+    networks:
+      - plantera-network
+
+  rabbitmq:
+    ports:
+      - "15674:15672"
+
+  backend:
+    build:
+      target: development
+    environment:
+      NODE_ENV: development
+    volumes:
+      - ./:/app
+      - /app/node_modules
+      - /app/dist
+    ports:
+      - "8001:8000"
+
+  worker:
+    build:
+      target: development
+    environment:
+      NODE_ENV: development
+    volumes:
+      - ./:/app
+      - /app/node_modules
+      - /app/dist
+    command: ["dumb-init", "npx", "tsx", "src/worker.ts"]

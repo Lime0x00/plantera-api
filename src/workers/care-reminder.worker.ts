@@ -56,7 +56,7 @@ export function registerCareReminderWorker(
     for (const mp of duePlants) {
       const userId = mp.userId!;
       const plantName =
-        (mp.plant as { name?: string } | null)?.name ?? 'Your plant';
+        (mp.plant as { commonName?: string } | null)?.commonName ?? 'Your plant';
 
       if (mp.nextWatering && mp.nextWatering <= now) {
         await notificationService

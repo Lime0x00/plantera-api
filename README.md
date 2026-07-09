@@ -1,115 +1,124 @@
-# Plantera API
+# Plantera Backend API
 
-REST API for Plantera — plant care & disease detection platform. Express + Prisma + PostgreSQL + Socket.IO.
+REST API for the Plantera ecosystem — serves the web client, coordinates DB transactions, caching, mail queues, and delegates ML tasks to the plant-analyzer service.
 
----
+## Quick Start (Docker Standalone)
 
-## Quick Start (Docker)
-
-**Requirements:** PostgreSQL 15+ (local or cloud)
+Runs backend + PostgreSQL + Redis + RabbitMQ:
 
 ```bash
-# 1. Clone
-git clone https://github.com/Lime0x00/plantera-api.git
-cd plantera-api
-
-# 2. Configure
-cp .env.example .env
-# Edit .env — set DATABASE_URL to your PostgreSQL connection string
-
-# 3. Build
-docker build -t plantera-api .
-
-# 4. Run
-docker run -p 8000:8000 -v $(pwd)/.env:/app/.env plantera-api
+docker compose -f compose.yml up -d --build
 ```
 
-The container does everything automatically:
-1. Runs database migrations
-2. Seeds catalog data (47 plants, 6 diseases)
-3. Starts the server
-
-**Verify:** `curl http://localhost:8000/health` → `{"status":"ok"}`
-
-**Register a user:**
-```bash
-curl -X POST http://localhost:8000/api/v1/auth/register \
-  -H "Content-Type: application/json" \
-  -d '{"email":"you@example.com","password":"Pass123!","userName":"myuser","firstName":"Your","lastName":"Name"}'
-```
-
----
-
-## Environment Variables
-
-| Variable | Required | Default | Description |
-|----------|----------|---------|-------------|
-| `DATABASE_URL` | Yes | — | PostgreSQL connection string |
-| `REDIS_HOST` | No | `localhost` | Redis host (optional, caching) |
-| `ALLOWED_ORIGINS` | No | `*` | CORS origins |
-| `JWT_SECRET` | No | (auto) | JWT signing key |
-| `ANALYZER_URL` | No | `http://localhost:5000/v1` | ML service URL |
-
-Full list in `.env.example`.
-
----
-
-## With Plant Analyzer (ML Disease Detection)
+For dev mode (includes MailHog + hot-reload):
 
 ```bash
-# Create shared network
-docker network create plantera-net
-
-# Start ML service
-docker run -d --network plantera-net --name plant-analyzer -p 5000:5000 plant-analyzer
-
-# Start backend on same network
-docker run --network plantera-net -p 8000:8000 \
-  -v $(pwd)/.env:/app/.env \
-  -e ANALYZER_URL=http://plant-analyzer:5000/v1 \
-  plantera-api
+docker compose -f compose.yml -f compose.override.yml up -d --build
 ```
 
----
+Wait ~45s for migrations + seeds to complete. API at `http://localhost:8000`.
 
-## Running Locally (No Docker)
+On first start, the entrypoint automatically:
+1. Runs Prisma migrations (3 migration files)
+2. Seeds the database (47 plants, 6 diseases, 8 articles, admin user)
+
+Seeds are idempotent — safe to restart.
+
+## Development Mode
+
+```bash
+docker compose -f compose.yml -f compose.override.yml up -d --build
+```
+
+Hot-reload on file changes (nodemon + tsx). Backend at `http://localhost:8001`.
+
+| Service | Production | Dev |
+|---------|-----------|-----|
+| Backend | 8000 | 8001 |
+| RabbitMQ mgmt | 15672 | 15674 |
+| MailHog SMTP | 1025 | 25025 |
+| MailHog web | 8025 | 25026 |
+
+## Running Locally (Without Docker)
+
+### 1. Prerequisites
+
+- Node.js 18+
+- PostgreSQL 15+
+- Redis 7+
+
+### 2. Configure
 
 ```bash
 cp .env.example .env
 npm install
 npx prisma generate
 npx prisma db push
+npm run seed
+```
+
+### 3. Run
+
+```bash
 npm run dev
 ```
 
-Server at `http://localhost:8000`.
+API at `http://localhost:8000`. Swagger UI at `http://localhost:8000/api/v1/docs`.
 
----
+### Worker
 
-## API Docs
+```bash
+npm run dev:worker
+```
 
-- Swagger UI: `http://localhost:8000/api/v1/docs`
-- OpenAPI spec: `http://localhost:8000/api/v1/openapi.json`
+## Database
 
----
+- **ORM**: Prisma v7 with `prisma.config.ts` (URL not set in `schema.prisma`)
+- **Migrations**: `prisma/migrations/` — 3 files (core, activity, community tables)
+- **Seed**: `database/seeders/main.seeder.ts` — compiled to `dist/database/seeders/main.seeder.cjs`, called via `node -e "require('...').mainSeeder()"` in entrypoint
+
+## Environment Variables
+
+| Variable | Default | Description |
+|----------|---------|-------------|
+| `BACKEND_PORT` | `8000` | API port |
+| `DATABASE_URL` | — | PostgreSQL connection string |
+| `REDIS_HOST` | `redis` | Redis host |
+| `ALLOWED_ORIGINS` | `http://localhost:3000,http://localhost:3001` | CORS origins |
+| `ANALYZER_URL` | `http://plant-analyzer:5000/v1` | ML service URL |
+| `JWT_SECRET` | — | JWT signing key |
+| `MAIL_HOST` | `mailhog` | SMTP host |
+
+## API Documentation
+
+- Interactive Swagger UI: `http://localhost:8000/api/v1/docs`
+- Raw OpenAPI JSON: `http://localhost:8000/api/v1/openapi.json`
+
+## Tech Stack
+
+- **Runtime**: Node.js / TypeScript
+- **Framework**: Express.js
+- **ORM**: Prisma v7 (PostgreSQL)
+- **Cache**: Redis (ioredis)
+- **Queue**: BullMQ / RabbitMQ
+- **DI**: Awilix
+- **Build**: tsup (CJS output)
+- **Testing**: Vitest
 
 ## Project Structure
 
 ```
 src/
-├── config/            # Config loaders
-├── features/          # Auth, Plants, Profile, Community
-│   └── [name]/
-│       ├── [name].controller.ts
-│       ├── [name].service.ts
-│       └── [name].routes.ts
-├── infrastructure/    # DB, Redis, Mail, Queue, WebSocket
-├── framework/         # Middleware, Context, DI container
-├── common/            # Types, helpers, errors, constants
-├── app.ts             # Express bootstrap
-└── server.ts          # Entry point
-prisma/
-└── schema.prisma
+├── config/           # App configuration
+├── features/         # Feature modules (auth, community, garden, etc.)
+├── infrastructure/   # DB drivers, websocket gateways
+├── middleware/       # Auth, validation, error handling
+├── routes/          # Router composition
+├── container.ts     # Awilix DI registration
+├── app.ts           # Express bootstrap
+└── server.ts        # Entrypoint
 database/
-└── seeders/           # Catalog seed data
+├── data/            # Seed data (plants.json, diseases.json, articles.json)
+├── seeders/         # TypeScript seed modules (compiled to dist/)
+└── migrations/      # Prisma migration files
 ```

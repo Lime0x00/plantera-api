@@ -18,7 +18,7 @@
       ]
     },
     "description": "A common plant disease that causes spots and damage on leaves.",
-    "imageUrl": ""
+    "imageUrl": "https://upload.wikimedia.org/wikipedia/commons/c/c6/Bacterial_leaf_spot_symptoms.jpg"
   },
   {
     "name": "Calcium Deficiency",
@@ -38,7 +38,7 @@
       ]
     },
     "description": "A nutrient problem that affects plant growth and cell development.",
-    "imageUrl": ""
+    "imageUrl": "https://upload.wikimedia.org/wikipedia/commons/2/2e/Blossom_end_rot.JPG"
   },
   {
     "name": "Scorched Leaves",
@@ -54,7 +54,7 @@
       ]
     },
     "description": "Plant damage caused by heat, sunlight, or water stress.",
-    "imageUrl": ""
+    "imageUrl": "https://upload.wikimedia.org/wikipedia/commons/3/3f/Leaf_scorch_on_ligusticum.jpg"
   },
   {
     "name": "Leaf Blight",
@@ -70,7 +70,7 @@
       ]
     },
     "description": "A serious plant disease that damages leaves and reduces plant health.",
-    "imageUrl": ""
+    "imageUrl": "https://upload.wikimedia.org/wikipedia/commons/8/82/Blight_disease_on_sweet_pepper.jpg"
   },
   {
     "name": "Yellow Vein Mosaic",
@@ -90,7 +90,7 @@
       ]
     },
     "description": "A viral disease that causes yellow patterns and abnormal leaf growth.",
-    "imageUrl": ""
+    "imageUrl": "https://upload.wikimedia.org/wikipedia/commons/3/33/Cucumber_mosaic_virus_symptoms.jpg"
   },
   {
     "name": "Curly Yellow Virus",
@@ -110,6 +110,6 @@
       ]
     },
     "description": "A viral infection causing yellowing and curling of plant leaves.",
-    "imageUrl": ""
+    "imageUrl": "https://upload.wikimedia.org/wikipedia/commons/1/19/Yellow_curl_leaf_disease_Pj_IMG_3162.jpg"
   }
 ]

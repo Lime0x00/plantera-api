@@ -24,8 +24,25 @@ export class LikeRepository
     postId: number,
     authorId: number
   ): Promise<LikeModel | null> {
-    const result = await this.driver.findMany({ where: { postId, authorId } });
+    const result = await this.findMany({ where: { postId, authorId } }, 'withoutTrashed');
     return result[0] || null;
+  }
+
+  async findDeletedByPostAndAuthor(
+    postId: number,
+    authorId: number
+  ): Promise<LikeModel | null> {
+    const result = await this.findMany({ where: { postId, authorId } }, 'onlyTrashed');
+    return result[0] || null;
+  }
+
+  async restoreByPostAndAuthor(
+    postId: number,
+    authorId: number
+  ): Promise<LikeModel | null> {
+    const existing = await this.findDeletedByPostAndAuthor(postId, authorId);
+    if (!existing) return null;
+    return this.restore({ where: { id: existing.id } });
   }
 
   async deleteByPostAndAuthor(

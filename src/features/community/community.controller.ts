@@ -5,6 +5,10 @@ import { parseIdParam, clampLimit } from '#common/helpers';
 
 import { CommunityService } from './community.service';
 import { PostResource, CommentResource, LikeResource } from './resources';
+import { container } from '#app/container';
+import { StorageService } from '#infrastructure/storage/storage.service';
+import { StoragePathResolver } from '#infrastructure/storage/storage-path.resolver';
+import { Post } from './domain/community.model';
 
 interface CommunityControllerDeps {
   services: { communityService: CommunityService };
@@ -23,8 +27,34 @@ export class CommunityController extends Controller {
 
   public async create(req: Request, res: Response, next: NextFunction) {
     return super.run(next, async () => {
+      let storageDisk: string | undefined;
+      let storagePath: string | undefined;
+
+      if (req.file) {
+        const storageService = container.resolve<StorageService>('storageService');
+        const post = new Post();
+        post.id = Date.now();
+        const ext = req.file.mimetype.split('/')[1] || 'jpg';
+        const path = StoragePathResolver.forModel(post, ext);
+
+        const result = await storageService.upload(path, {
+          buffer: req.file.buffer,
+          mimeType: req.file.mimetype,
+          filename: req.file.originalname,
+          size: req.file.size,
+        });
+
+        storageDisk = result.disk;
+        storagePath = result.path;
+      }
+
       const result = await this.#service.create(
-        { ...req.body, authorId: req.user!.userId },
+        {
+          ...req.body,
+          authorId: req.user!.userId,
+          storageDisk,
+          storagePath,
+        },
         req.user!.userId,
         req.user!.role
       );
@@ -44,7 +74,8 @@ export class CommunityController extends Controller {
       const limit = clampLimit(
         req.query.limit ? parseInt(req.query.limit as string) : 20
       );
-      const result = await this.#service.findAllPublished(cursor, limit);
+      const viewerId = req.user?.userId;
+      const result = await this.#service.findAllPublished(cursor, limit, viewerId);
       return super.ok(
         res,
         {
@@ -138,6 +169,37 @@ export class CommunityController extends Controller {
         req.user!.role
       );
       return super.ok(res, {}, 'Comment deleted successfully.');
+    });
+  }
+
+  public async uploadImage(req: Request, res: Response, next: NextFunction) {
+    return super.run(next, async () => {
+      const postId = parseIdParam(req.params.postId);
+      if (!req.file) {
+        return super.badRequest(res, 'No image file provided');
+      }
+      const storageService = container.resolve<StorageService>('storageService');
+      const postForPath = new Post();
+      postForPath.id = postId;
+      const ext = req.file.mimetype.split('/')[1] || 'jpg';
+      const path = StoragePathResolver.forModel(postForPath, ext);
+      const result = await storageService.upload(path, {
+        buffer: req.file.buffer,
+        mimeType: req.file.mimetype,
+        filename: req.file.originalname,
+        size: req.file.size,
+      });
+      const updated = await this.#service.update(
+        postId,
+        { storageDisk: result.disk, storagePath: result.path },
+        req.user!.userId,
+        req.user!.role
+      );
+      return super.ok(
+        res,
+        this.#postResource.make(updated),
+        'Image uploaded successfully'
+      );
     });
   }
 

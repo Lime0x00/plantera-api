@@ -6,6 +6,7 @@ import { authenticate } from '#framework/middleware/auth.middleware';
 import { CreateCommunityDto } from './dtos/create.dto';
 import { UpdateCommunityDto } from './dtos/update.dto';
 import { CreateCommentDto } from './dtos/comment.dto';
+import { upload } from '#framework/middleware/upload.middleware';
 
 const communityRouter = Router();
 
@@ -23,7 +24,7 @@ communityRouter.get('/:id', (req, res, next) =>
 communityRouter.post(
   '/',
   authenticate,
-  validateDto(CreateCommunityDto),
+  upload.single('image'),
   (req, res, next) =>
     container
       .resolve<CommunityController>('communityController')
@@ -72,6 +73,16 @@ communityRouter.post('/:postId/like', authenticate, (req, res, next) =>
   container
     .resolve<CommunityController>('communityController')
     .toggleLike(req, res, next)
+);
+
+communityRouter.post(
+  '/:postId/image',
+  authenticate,
+  upload.single('image'),
+  (req, res, next) =>
+    container
+      .resolve<CommunityController>('communityController')
+      .uploadImage(req, res, next)
 );
 
 communityRouter.get('/:postId/likes', authenticate, (req, res, next) =>
